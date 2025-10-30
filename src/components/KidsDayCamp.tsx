@@ -15,8 +15,8 @@ export default function KidsDayCamp() {
 
         {/* Title */}
         <h2 className="text-5xl md:text-6xl font-extrabold tracking-wide">
-          <span className="block">KIDS HOLIDAY</span>
-          <span className="block mt-1">CAMP</span>
+          <span className="block">KIDS AFTER SCHOOL</span>
+          <span className="block mt-1">PROGRAMS</span>
         </h2>
 
         {/* Circular hero image */}

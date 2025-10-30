@@ -2,7 +2,7 @@ export default function NavBar() {
   const items = [
     { href: '#about', label: 'About' },
     { href: '#more-information', label: 'More Information' },
-    { href: '#kids-day-camp', label: 'Kids Day Camp' },
+    { href: '#kids-day-camp', label: 'Kids After School Programs' },
     { href: '#schedule', label: 'Schedule' },
     { href: '#pricing-info', label: 'Pricing Info' },
   ];
@@ -12,7 +12,7 @@ export default function NavBar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2 font-extrabold text-[#c74444]">
           <span className="inline-block w-6 h-6 rounded-md bg-[#c74444]"></span>
-          <span>Day Camp</span>
+          <span>Kids After School Programs</span>
         </a>
         <ul className="hidden md:flex items-center gap-6 text-sm font-semibold text-[#1a2945]">
           {items.map((it) => (
