@@ -5,6 +5,7 @@ import ProgramSchedule from './components/ProgramSchedule';
 import PricingInfo from './components/PricingInfo';
 import NavBar from './components/NavBar';
 import AboutSection from './components/AboutSection';
+import AfterschoolPrograms from './components/AfterschoolPrograms';
 
 function App() {
   return (
@@ -93,6 +94,8 @@ function App() {
       <ProgramSchedule />
       {/* Pricing Info Section */}
       <PricingInfo />
+      {/* Afterschool Programs Section */}
+      <AfterschoolPrograms />
     </div>
   );
 }
