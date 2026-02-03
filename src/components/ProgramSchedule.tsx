@@ -10,18 +10,17 @@ export default function ProgramSchedule() {
         </div>
 
         <div className="text-center space-y-2">
-          <p className="opacity-90">Enroll your kids now! <span className="font-bold">Choose your best schedule below!</span></p>
+          <p className="opacity-90">Enroll your kids now! <span className="font-bold">Programs run throughout the year!</span></p>
         </div>
 
         <div className="grid md:grid-cols-[1fr_auto] gap-8 items-end">
-          <ul className="space-y-3 text-base md:text-lg max-w-md mx-auto md:mx-0">
-            <li className="list-disc list-inside font-bold">November 4, 2025</li>
-            <li className="list-disc list-inside font-bold">November 11, 2025</li>
-            <li className="list-disc list-inside">October 13, 2025</li>
-            <li className="list-disc list-inside">October 20, 2025</li>
-            <li className="list-disc list-inside">December 24-26, 2025</li>
-            <li className="list-disc list-inside">December 29-31, 2025</li>
-          </ul>
+          <div className="space-y-4 text-base md:text-lg max-w-md mx-auto md:mx-0">
+            <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
+              <p className="text-2xl md:text-3xl font-extrabold text-[#f5a347] mb-2">Monday – Friday</p>
+              <p className="opacity-90">Our programs are available every weekday!</p>
+              <p className="mt-3 font-semibold">Choose the days that work best for your family's schedule.</p>
+            </div>
+          </div>
 
           <div className="justify-self-center md:justify-self-end">
             <div className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 relative">

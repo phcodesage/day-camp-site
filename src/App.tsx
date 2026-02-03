@@ -6,11 +6,13 @@ import PricingInfo from './components/PricingInfo';
 import NavBar from './components/NavBar';
 import AboutSection from './components/AboutSection';
 import AfterschoolPrograms from './components/AfterschoolPrograms';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
   return (
     <div className="w-full min-h-screen bg-[#f5e6e0] relative pt-16">
       <NavBar />
+      <ScrollToTop />
       {/* Decorative Elements */}
       <img
         src="/images/kids/blue-leaf.png"
