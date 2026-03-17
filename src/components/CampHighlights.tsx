@@ -14,7 +14,7 @@ export default function CampHighlights() {
 
         {/* Intro heading */}
         <h3 className="text-2xl md:text-3xl font-extrabold text-[#c74444] text-center">
-          At our day camp, every day is a new adventure! Your child will:
+          In our afterschool program, every day is a new adventure! Your child will enjoy:
         </h3>
 
         {/* Activities list */}
@@ -22,23 +22,23 @@ export default function CampHighlights() {
           <ul className="space-y-5 text-base md:text-lg leading-relaxed">
             <li className="flex gap-3">
               <span className="mt-2 inline-block w-2 h-2 rounded-full bg-white" aria-hidden="true"></span>
-              <span className="font-semibold">Brain games</span>
+              <span className="font-semibold">CHESS</span>
             </li>
             <li className="flex gap-3">
               <span className="mt-2 inline-block w-2 h-2 rounded-full bg-white" aria-hidden="true"></span>
-              <span className="font-semibold">Creative Arts</span>
+              <span className="font-semibold">ABACUS</span>
             </li>
             <li className="flex gap-3">
               <span className="mt-2 inline-block w-2 h-2 rounded-full bg-white" aria-hidden="true"></span>
-              <span className="font-semibold">Chess and Abacus learning</span>
+              <span className="font-semibold">ART</span>
             </li>
             <li className="flex gap-3">
               <span className="mt-2 inline-block w-2 h-2 rounded-full bg-white" aria-hidden="true"></span>
-              <span className="font-semibold">Mini Science</span>
+              <span className="font-semibold">BRAIN GAMES</span>
             </li>
             <li className="flex gap-3">
               <span className="mt-2 inline-block w-2 h-2 rounded-full bg-white" aria-hidden="true"></span>
-              <span className="font-semibold">and other interactive activities</span>
+              <span className="font-semibold">HOMEWORK HELP</span>
             </li>
           </ul>
         </div>

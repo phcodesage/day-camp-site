@@ -1,35 +1,36 @@
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-export default function NavBar() {
-  const items = [
-    { href: '#about', label: 'About' },
-    { href: '#more-information', label: 'More Information' },
-    { href: '#kids-day-camp', label: 'Kids After School Programs' },
-    { href: '#schedule', label: 'Schedule' },
-    { href: '#pricing-info', label: 'Pricing Info' },
-  ];
+const ITEMS = [
+  { href: '#about', label: 'About' },
+  { href: '#more-information', label: 'More Information' },
+  { href: '#afterschool', label: 'Afterschool Programs' },
+  { href: '#schedule', label: 'Schedule' },
+];
 
-  const [activeSection, setActiveSection] = useState<string>('');
+export default function NavBar() {
+  const [activeSection, setActiveSection] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    const sectionIds = items.map((item) => item.href.replace('#', ''));
-
-    const observerOptions = {
-      root: null,
-      rootMargin: '-20% 0px -60% 0px',
-      threshold: 0,
-    };
-
-    const observerCallback: IntersectionObserverCallback = (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          setActiveSection(entry.target.id);
-        }
-      });
-    };
-
-    const observer = new IntersectionObserver(observerCallback, observerOptions);
+    const sectionIds = ITEMS.map((item) => item.href.replace('#', ''));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      {
+        root: null,
+        rootMargin: '-20% 0px -60% 0px',
+        threshold: 0,
+      }
+    );
 
     sectionIds.forEach((id) => {
       const element = document.getElementById(id);
@@ -41,114 +42,121 @@ export default function NavBar() {
     return () => observer.disconnect();
   }, []);
 
-  // Close menu when clicking on a link
-  const handleLinkClick = () => {
-    setIsMenuOpen(false);
-  };
-
-  // Prevent scroll when menu is open
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = isMenuOpen ? 'hidden' : '';
+
     return () => {
       document.body.style.overflow = '';
     };
   }, [isMenuOpen]);
 
+  const handleLinkClick = () => {
+    setIsMenuOpen(false);
+  };
+
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-black/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 font-extrabold text-[#c74444]">
-            <span className="inline-block w-6 h-6 rounded-md bg-[#c74444]"></span>
-            <span className="text-sm sm:text-base">Kids After School Programs</span>
-          </a>
+      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-black/5 bg-white/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2 font-extrabold text-[#c74444]">
+            <Image
+              src="/exceed-logo.png"
+              alt="Exceed Learning Center logo"
+              width={40}
+              height={46}
+              className="h-10 w-auto object-contain"
+              priority
+            />
+            <span className="text-sm sm:text-base">
+              Kids After School Programs
+            </span>
+          </Link>
 
-          {/* Desktop Navigation */}
-          <ul className="hidden lg:flex items-center gap-6 text-sm font-semibold text-[#1a2945]">
-            {items.map((it) => {
-              const sectionId = it.href.replace('#', '');
+          <ul className="hidden items-center gap-6 text-sm font-semibold text-[#1a2945] lg:flex">
+            {ITEMS.map((item) => {
+              const sectionId = item.href.replace('#', '');
               const isActive = activeSection === sectionId;
 
               return (
-                <li key={it.href} className="relative">
+                <li key={item.href} className="relative">
                   <a
-                    href={it.href}
-                    className={`py-1 transition-colors duration-300 ${isActive ? 'text-[#c74444]' : 'hover:text-[#c74444]'
-                      }`}
+                    href={item.href}
+                    className={`py-1 transition-colors duration-300 ${
+                      isActive ? 'text-[#c74444]' : 'hover:text-[#c74444]'
+                    }`}
                   >
-                    {it.label}
+                    {item.label}
                   </a>
-                  {/* Active indicator underline */}
                   <span
-                    className={`absolute left-0 -bottom-1 h-0.5 bg-[#c74444] rounded-full transition-all duration-300 ${isActive ? 'w-full opacity-100' : 'w-0 opacity-0'
-                      }`}
+                    className={`absolute left-0 -bottom-1 h-0.5 rounded-full bg-[#c74444] transition-all duration-300 ${
+                      isActive ? 'w-full opacity-100' : 'w-0 opacity-0'
+                    }`}
                   />
                 </li>
               );
             })}
           </ul>
 
-          {/* Hamburger Button */}
           <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden relative w-10 h-10 flex items-center justify-center focus:outline-none"
+            onClick={() => setIsMenuOpen((current) => !current)}
+            className="relative flex h-10 w-10 items-center justify-center lg:hidden"
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           >
-            <div className="relative w-6 h-5 flex flex-col justify-between">
+            <div className="relative flex h-5 w-6 flex-col justify-between">
               <span
-                className={`block h-0.5 w-full bg-[#1a2945] rounded-full transition-all duration-300 origin-center ${isMenuOpen ? 'rotate-45 translate-y-2' : ''
-                  }`}
+                className={`block h-0.5 w-full rounded-full bg-[#1a2945] transition-all duration-300 ${
+                  isMenuOpen ? 'translate-y-2 rotate-45' : ''
+                }`}
               />
               <span
-                className={`block h-0.5 w-full bg-[#1a2945] rounded-full transition-all duration-300 ${isMenuOpen ? 'opacity-0 scale-0' : ''
-                  }`}
+                className={`block h-0.5 w-full rounded-full bg-[#1a2945] transition-all duration-300 ${
+                  isMenuOpen ? 'scale-0 opacity-0' : ''
+                }`}
               />
               <span
-                className={`block h-0.5 w-full bg-[#1a2945] rounded-full transition-all duration-300 origin-center ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''
-                  }`}
+                className={`block h-0.5 w-full rounded-full bg-[#1a2945] transition-all duration-300 ${
+                  isMenuOpen ? '-translate-y-2 -rotate-45' : ''
+                }`}
               />
             </div>
           </button>
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
       <div
-        className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300 ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-          }`}
+        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 lg:hidden ${
+          isMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+        }`}
         onClick={() => setIsMenuOpen(false)}
       />
 
-      {/* Mobile Menu Panel */}
       <div
-        className={`fixed top-16 right-0 h-[calc(100vh-4rem)] w-72 max-w-[80vw] bg-white z-50 lg:hidden shadow-2xl transition-transform duration-300 ease-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
+        className={`fixed right-0 top-16 z-50 h-[calc(100vh-4rem)] w-72 max-w-[80vw] bg-white shadow-2xl transition-transform duration-300 ease-out lg:hidden ${
+          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
       >
         <ul className="flex flex-col py-4">
-          {items.map((it) => {
-            const sectionId = it.href.replace('#', '');
+          {ITEMS.map((item) => {
+            const sectionId = item.href.replace('#', '');
             const isActive = activeSection === sectionId;
 
             return (
-              <li key={it.href}>
+              <li key={item.href}>
                 <a
-                  href={it.href}
+                  href={item.href}
                   onClick={handleLinkClick}
-                  className={`flex items-center gap-3 px-6 py-4 font-semibold transition-colors duration-200 ${isActive
-                      ? 'text-[#c74444] bg-[#c74444]/5 border-r-4 border-[#c74444]'
-                      : 'text-[#1a2945] hover:text-[#c74444] hover:bg-[#f5e6e0]/50'
-                    }`}
+                  className={`flex items-center gap-3 px-6 py-4 font-semibold transition-colors duration-200 ${
+                    isActive
+                      ? 'border-r-4 border-[#c74444] bg-[#c74444]/5 text-[#c74444]'
+                      : 'text-[#1a2945] hover:bg-[#f5e6e0]/50 hover:text-[#c74444]'
+                  }`}
                 >
-                  {/* Active dot indicator */}
                   <span
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${isActive ? 'bg-[#c74444] scale-100' : 'bg-transparent scale-0'
-                      }`}
+                    className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                      isActive ? 'scale-100 bg-[#c74444]' : 'scale-0 bg-transparent'
+                    }`}
                   />
-                  {it.label}
+                  {item.label}
                 </a>
               </li>
             );

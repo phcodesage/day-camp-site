@@ -7,9 +7,12 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.next
 dist
 dist-ssr
+out
 *.local
+*.tsbuildinfo
 
 .vscode/*
 !.vscode/extensions.json
@@ -21,5 +24,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.env.local
 
 .vercel
