@@ -13,25 +13,24 @@ const BADGE_STYLES = [
 export default async function ProgramSchedule() {
   const content = await getCmsSectionContent('programSchedule');
   const videoUrl = content.videoUrl?.trim();
-  const badgeLabels = content.badgeLabels.length
-    ? content.badgeLabels
-    : ['Programs'];
 
   return (
     <section id="schedule" className="w-full bg-[#0e243a] text-white px-6 md:px-10 lg:px-16 py-16 md:py-24 scroll-mt-24">
       <div className="max-w-5xl mx-auto grid gap-10 md:gap-14">
-        <div className="grid gap-4 max-w-xl w-full mx-auto">
-          {badgeLabels.map((label, index) => (
-            <div
-              key={`${label}-${index}`}
-              className={`rounded-full px-6 py-4 text-center text-lg font-extrabold tracking-wide md:text-xl ${
-                BADGE_STYLES[index % BADGE_STYLES.length]
-              }`}
-            >
-              {label}
-            </div>
-          ))}
-        </div>
+        {content.badgeLabels.length ? (
+          <div className="grid gap-4 max-w-xl w-full mx-auto">
+            {content.badgeLabels.map((label, index) => (
+              <div
+                key={`${label}-${index}`}
+                className={`rounded-full px-6 py-4 text-center text-lg font-extrabold tracking-wide md:text-xl ${
+                  BADGE_STYLES[index % BADGE_STYLES.length]
+                }`}
+              >
+                {label}
+              </div>
+            ))}
+          </div>
+        ) : null}
 
         <div className="text-center space-y-2">
           <p className="opacity-90">

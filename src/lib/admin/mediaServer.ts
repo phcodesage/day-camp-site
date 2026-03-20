@@ -85,6 +85,9 @@ function collectCmsMediaUsage(content: CmsContentBySectionKey) {
     usage.set(normalizedUrl, [...existing, label]);
   };
 
+  addUsage(content.siteChrome.logoSrc, 'Site Chrome logo');
+  addUsage(content.siteChrome.heroImageSrc, 'Site Chrome hero image');
+  addUsage(content.siteChrome.accentImageSrc, 'Site Chrome accent image');
   addUsage(content.moreInformation.imageSrc, 'More Information image');
   addUsage(content.moreInformation.videoUrl, 'More Information video');
   addUsage(content.campHighlights.imageSrc, 'Camp Highlights image');

@@ -3,15 +3,16 @@ import { NextResponse } from 'next/server';
 import { requireAdminOrJsonResponse } from '@/lib/admin/requireAdmin';
 import {
   getAllCmsContent,
+  mergeCmsSectionContent,
   upsertCmsSectionContent,
 } from '@/lib/cms/cms';
-import { DEFAULT_CMS_CONTENT } from '@/lib/cms/defaultContent';
 import type { CmsSectionKey } from '@/lib/cms/types';
 import { getMongoErrorMessage } from '@/lib/mongodb';
 
 export const runtime = 'nodejs';
 
 const ALLOWED_SECTION_KEYS: CmsSectionKey[] = [
+  'siteChrome',
   'about',
   'moreInformation',
   'campHighlights',
@@ -68,10 +69,10 @@ export async function PUT(request: Request) {
       );
     }
 
-    updates[key] = {
-      ...DEFAULT_CMS_CONTENT[key],
-      ...(sectionData as Record<string, unknown>),
-    };
+    updates[key] = mergeCmsSectionContent(
+      key,
+      sectionData as Record<string, unknown>
+    ) as unknown as Record<string, unknown>;
   }
 
   try {

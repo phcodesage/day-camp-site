@@ -1,12 +1,11 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
-import type { ActivityOption } from '@/lib/registration';
 
 export interface IRegistration extends Document {
   parentName: string;
   studentName: string;
   email: string;
   phone: string;
-  activities: ActivityOption[];
+  activities: string[];
   preferredDays: string;
   notes?: string;
   createdAt: Date;
@@ -46,7 +45,6 @@ const registrationSchema = new Schema<IRegistration>(
     activities: {
       type: [String],
       required: [true, 'At least one activity is required'],
-      enum: ['CHESS', 'ABACUS', 'ART', 'BRAIN GAMES', 'HOMEWORK HELP'],
     },
     preferredDays: {
       type: String,

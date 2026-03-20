@@ -3,10 +3,8 @@
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { type ChangeEvent, type FocusEvent, type FormEvent, useState } from 'react';
 import {
-  ACTIVITY_OPTIONS,
   MAX_NAME_LENGTH,
   MAX_NOTES_LENGTH,
-  PREFERRED_DAY_OPTIONS,
   formatPreferredDays,
   getRegistrationFieldErrors,
   getPreferredDaySelections,
@@ -16,6 +14,7 @@ import {
   type RegistrationField,
   type RegistrationFieldErrors,
   type RegistrationPayload,
+  type RegistrationValidationConfig,
 } from '@/lib/registration';
 import { DEFAULT_CMS_CONTENT } from '@/lib/cms/defaultContent';
 import type { AfterschoolProgramsContent } from '@/lib/cms/types';
@@ -61,6 +60,11 @@ export default function AfterschoolPrograms({
   cms,
 }: Readonly<{ cms?: AfterschoolProgramsContent }>) {
   const content = cms ?? DEFAULT_CMS_CONTENT.afterschoolPrograms;
+  const registrationConfig: RegistrationValidationConfig = {
+    activityOptions: content.activityOptions,
+    preferredDayOptions: content.preferredDayOptions,
+    validationMessages: content.validationMessages,
+  };
 
   const [formData, setFormData] = useState<RegistrationPayload>(
     createInitialFormState
@@ -69,13 +73,16 @@ export default function AfterschoolPrograms({
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
   const [submissionState, setSubmissionState] = useState<SubmissionState>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const selectedPreferredDays = getPreferredDaySelections(formData.preferredDays);
+  const selectedPreferredDays = getPreferredDaySelections(
+    formData.preferredDays,
+    content.preferredDayOptions
+  );
 
   const applySingleFieldValidation = (
     field: RegistrationField,
     nextFormData: RegistrationPayload
   ) => {
-    const nextErrors = getRegistrationFieldErrors(nextFormData);
+    const nextErrors = getRegistrationFieldErrors(nextFormData, registrationConfig);
 
     setFieldErrors((current) => {
       const updatedErrors = { ...current };
@@ -158,7 +165,10 @@ export default function AfterschoolPrograms({
     setSubmissionState(null);
 
     setFormData((current) => {
-      const currentDays = getPreferredDaySelections(current.preferredDays);
+      const currentDays = getPreferredDaySelections(
+        current.preferredDays,
+        content.preferredDayOptions
+      );
       const nextDays = checked
         ? Array.from(new Set([...currentDays, day]))
         : currentDays.filter((item) => item !== day);
@@ -188,7 +198,10 @@ export default function AfterschoolPrograms({
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const nextFieldErrors = getRegistrationFieldErrors(formData);
+    const nextFieldErrors = getRegistrationFieldErrors(
+      formData,
+      registrationConfig
+    );
 
     if (hasRegistrationFieldErrors(nextFieldErrors)) {
       setFieldErrors(nextFieldErrors);
@@ -203,8 +216,8 @@ export default function AfterschoolPrograms({
       });
       setSubmissionState({
         kind: 'error',
-        title: 'Please fix the highlighted fields.',
-        message: 'Review the form and try again.',
+        title: content.submissionMessages.invalidFormTitle,
+        message: content.submissionMessages.invalidFormMessage,
       });
       return;
     }
@@ -241,7 +254,7 @@ export default function AfterschoolPrograms({
         }
 
         throw new Error(
-          result?.error || 'Could not submit the registration right now.'
+          result?.error || content.submissionMessages.serverErrorMessage
         );
       }
 
@@ -250,19 +263,19 @@ export default function AfterschoolPrograms({
       setTouchedFields({});
       setSubmissionState({
         kind: 'success',
-        title: 'Registration submitted.',
+        title: content.submissionMessages.successTitle,
         message:
           result?.message ||
-          'Thank you. Your registration was received successfully.',
+          content.submissionMessages.successMessage,
       });
     } catch (error) {
       setSubmissionState({
         kind: 'error',
-        title: 'Submission failed.',
+        title: content.submissionMessages.errorTitle,
         message:
           error instanceof Error
             ? error.message
-            : 'Could not submit the registration right now.',
+            : content.submissionMessages.serverErrorMessage,
       });
     } finally {
       setIsSubmitting(false);
@@ -283,7 +296,7 @@ export default function AfterschoolPrograms({
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {ACTIVITY_OPTIONS.map((activity) => (
+          {content.activityOptions.map((activity) => (
             <div
               key={activity}
               className="space-y-3 rounded-2xl bg-[#f6dedd] p-6 text-center shadow-lg transition-shadow hover:shadow-xl"
@@ -291,8 +304,10 @@ export default function AfterschoolPrograms({
               <h3 className="text-xl font-bold uppercase text-[#c74444]">
                 {activity}
               </h3>
-              <p className="text-sm font-semibold">Monday to Friday</p>
-              <p className="text-sm">4:00 PM - 6:00 PM</p>
+              <p className="text-sm font-semibold">
+                {content.activityScheduleLabel}
+              </p>
+              <p className="text-sm">{content.activityTimeLabel}</p>
             </div>
           ))}
         </div>
@@ -332,7 +347,7 @@ export default function AfterschoolPrograms({
           <form onSubmit={handleSubmit} noValidate className="grid gap-5 md:grid-cols-2">
             <label className="flex flex-col gap-2">
               <span className="font-semibold">
-                Parent Name <span className="text-[#c74444]">*</span>
+                {content.parentNameLabel} <span className="text-[#c74444]">*</span>
               </span>
               <input
                 id="parentName"
@@ -342,7 +357,7 @@ export default function AfterschoolPrograms({
                 onChange={handleFieldChange}
                 onBlur={handleFieldBlur}
                 className={getInputClassName(Boolean(fieldErrors.parentName))}
-                placeholder="Enter parent name"
+                placeholder={content.parentNamePlaceholder}
                 autoComplete="name"
                 maxLength={MAX_NAME_LENGTH}
                 aria-invalid={Boolean(fieldErrors.parentName)}
@@ -366,7 +381,7 @@ export default function AfterschoolPrograms({
 
             <label className="flex flex-col gap-2">
               <span className="font-semibold">
-                Student Name <span className="text-[#c74444]">*</span>
+                {content.studentNameLabel} <span className="text-[#c74444]">*</span>
               </span>
               <input
                 id="studentName"
@@ -376,7 +391,7 @@ export default function AfterschoolPrograms({
                 onChange={handleFieldChange}
                 onBlur={handleFieldBlur}
                 className={getInputClassName(Boolean(fieldErrors.studentName))}
-                placeholder="Enter student name"
+                placeholder={content.studentNamePlaceholder}
                 maxLength={MAX_NAME_LENGTH}
                 aria-invalid={Boolean(fieldErrors.studentName)}
                 aria-describedby={
@@ -401,7 +416,7 @@ export default function AfterschoolPrograms({
 
             <label className="flex flex-col gap-2">
               <span className="font-semibold">
-                Email <span className="text-[#c74444]">*</span>
+                {content.emailLabel} <span className="text-[#c74444]">*</span>
               </span>
               <input
                 id="email"
@@ -411,7 +426,7 @@ export default function AfterschoolPrograms({
                 onChange={handleFieldChange}
                 onBlur={handleFieldBlur}
                 className={getInputClassName(Boolean(fieldErrors.email))}
-                placeholder="Enter email"
+                placeholder={content.emailPlaceholder}
                 autoComplete="email"
                 aria-invalid={Boolean(fieldErrors.email)}
                 aria-describedby={fieldErrors.email ? 'email-error' : undefined}
@@ -424,7 +439,7 @@ export default function AfterschoolPrograms({
 
             <label className="flex flex-col gap-2">
               <span className="font-semibold">
-                Phone Number <span className="text-[#c74444]">*</span>
+                {content.phoneLabel} <span className="text-[#c74444]">*</span>
               </span>
               <input
                 id="phone"
@@ -434,7 +449,7 @@ export default function AfterschoolPrograms({
                 onChange={handleFieldChange}
                 onBlur={handleFieldBlur}
                 className={getInputClassName(Boolean(fieldErrors.phone))}
-                placeholder="Enter phone number"
+                placeholder={content.phonePlaceholder}
                 autoComplete="tel"
                 inputMode="tel"
                 aria-invalid={Boolean(fieldErrors.phone)}
@@ -446,7 +461,7 @@ export default function AfterschoolPrograms({
                   {touchedFields.phone ? fieldErrors.phone : ''}
                 </span>
                 <span id="phone-help" className="text-[#1a2945]/55">
-                  Use digits, spaces, or + ( )
+                  {content.phoneHelperText}
                 </span>
               </div>
             </label>
@@ -454,15 +469,15 @@ export default function AfterschoolPrograms({
             <div className="space-y-3 md:col-span-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-semibold">
-                  Select Activities <span className="text-[#c74444]">*</span>
+                  {content.activitiesLabel} <span className="text-[#c74444]">*</span>
                 </p>
                 <p className="text-sm text-[#1a2945]/65">
-                  {formData.activities.length} selected
+                  {formData.activities.length} {content.selectedCountSuffix}
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-                {ACTIVITY_OPTIONS.map((activity) => {
+                {content.activityOptions.map((activity) => {
                   const isSelected = formData.activities.includes(activity);
 
                   return (
@@ -500,15 +515,15 @@ export default function AfterschoolPrograms({
             <div className="space-y-3 md:col-span-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-semibold">
-                  Preferred Days <span className="text-[#c74444]">*</span>
+                  {content.preferredDaysLabel} <span className="text-[#c74444]">*</span>
                 </p>
                 <p className="text-sm text-[#1a2945]/65">
-                  {selectedPreferredDays.length} selected
+                  {selectedPreferredDays.length} {content.selectedCountSuffix}
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-                {PREFERRED_DAY_OPTIONS.map((day) => {
+                {content.preferredDayOptions.map((day) => {
                   const isSelected = selectedPreferredDays.includes(day);
 
                   return (
@@ -544,7 +559,7 @@ export default function AfterschoolPrograms({
             </div>
 
             <label className="flex flex-col gap-2 md:col-span-2">
-              <span className="font-semibold">Notes</span>
+              <span className="font-semibold">{content.notesLabel}</span>
               <textarea
                 id="notes"
                 name="notes"
@@ -552,7 +567,7 @@ export default function AfterschoolPrograms({
                 onChange={handleFieldChange}
                 onBlur={handleFieldBlur}
                 className={`${getInputClassName(Boolean(fieldErrors.notes))} min-h-32`}
-                placeholder="Share allergies, pickup details, or anything else we should know"
+                placeholder={content.notesPlaceholder}
                 maxLength={MAX_NOTES_LENGTH}
                 aria-invalid={Boolean(fieldErrors.notes)}
                 aria-describedby={fieldErrors.notes ? 'notes-error' : 'notes-help'}
@@ -573,13 +588,15 @@ export default function AfterschoolPrograms({
                 className="w-full rounded-xl bg-[#c74444] px-8 py-3 font-semibold text-white transition-colors hover:bg-[#a63535] disabled:cursor-not-allowed disabled:bg-[#c74444]/60 md:w-auto"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'Submitting...' : 'Submit Registration'}
+                {isSubmitting
+                  ? content.submittingButtonLabel
+                  : content.submitButtonLabel}
               </button>
             </div>
           </form>
 
           <p className="mt-4 text-sm text-[#1a2945]/75">
-            Required fields are marked with <span className="text-[#c74444]">*</span>.
+            {content.requiredFieldsNotice}
           </p>
         </div>
 

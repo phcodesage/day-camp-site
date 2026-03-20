@@ -1,18 +1,22 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
+import { getCmsSectionContent } from '@/lib/cms/cms';
 import './globals.css';
 
-export const metadata: Metadata = {
-  title: 'Kids After School Programs',
-  description:
-    'Kids afterschool programs with online registration and a serverless submission API.',
-  icons: {
-    icon: '/exceed-logo.png',
-    shortcut: '/exceed-logo.png',
-    apple: '/exceed-logo.png',
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const siteChrome = await getCmsSectionContent('siteChrome');
+
+  return {
+    title: siteChrome.metadataTitle || siteChrome.brandTitle,
+    description: siteChrome.metadataDescription,
+    icons: {
+      icon: siteChrome.logoSrc,
+      shortcut: siteChrome.logoSrc,
+      apple: siteChrome.logoSrc,
+    },
+  };
+}
 
 export default function RootLayout({
   children,

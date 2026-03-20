@@ -1,6 +1,27 @@
 import type { CmsContentBySectionKey } from '@/lib/cms/types';
 
 export const DEFAULT_CMS_CONTENT: CmsContentBySectionKey = {
+  siteChrome: {
+    brandTitle: 'Kids After School Programs',
+    metadataTitle: 'Kids After School Programs',
+    metadataDescription:
+      'Kids afterschool programs with online registration and a serverless submission API.',
+    logoSrc: '/exceed-logo.png',
+    logoAlt: 'Exceed Learning Center logo',
+    heroImageSrc: '/images/kids/chess-kids.jpg',
+    heroImageAlt: 'Kids playing chess at camp',
+    accentImageSrc: '/images/kids/blue-leaf.png',
+    accentImageAlt: 'Decorative blue leaf',
+    navItems: [
+      { href: '#about', label: 'About' },
+      { href: '#more-information', label: 'More Information' },
+      { href: '#afterschool', label: 'Afterschool Programs' },
+      { href: '#schedule', label: 'Schedule' },
+    ],
+    mobileMenuOpenLabel: 'Open menu',
+    mobileMenuCloseLabel: 'Close menu',
+    scrollToTopLabel: 'Scroll to top',
+  },
   about: {
     heading: 'KIDS AFTER SCHOOL PROGRAMS',
     italicLine: 'School is out, but learning continues.',
@@ -66,9 +87,67 @@ export const DEFAULT_CMS_CONTENT: CmsContentBySectionKey = {
   afterschoolPrograms: {
     heroTitle: 'Kids Afterschool Programs',
     heroSubtitle: 'Monday to Friday',
+    activityOptions: [
+      'CHESS',
+      'ABACUS',
+      'ART',
+      'BRAIN GAMES',
+      'HOMEWORK HELP',
+    ],
+    activityScheduleLabel: 'Monday to Friday',
+    activityTimeLabel: '4:00 PM - 6:00 PM',
     registrationTitle: 'Registration Form',
     registrationDescription:
       'Fill up the form below to register and we will contact you to settle your payment.',
+    parentNameLabel: 'Parent Name',
+    parentNamePlaceholder: 'Enter parent name',
+    studentNameLabel: 'Student Name',
+    studentNamePlaceholder: 'Enter student name',
+    emailLabel: 'Email',
+    emailPlaceholder: 'Enter email',
+    phoneLabel: 'Phone Number',
+    phonePlaceholder: 'Enter phone number',
+    phoneHelperText: 'Use digits, spaces, or + ( )',
+    activitiesLabel: 'Select Activities',
+    preferredDaysLabel: 'Preferred Days',
+    preferredDayOptions: [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+    ],
+    selectedCountSuffix: 'selected',
+    notesLabel: 'Notes',
+    notesPlaceholder:
+      'Share allergies, pickup details, or anything else we should know',
+    submitButtonLabel: 'Submit Registration',
+    submittingButtonLabel: 'Submitting...',
+    requiredFieldsNotice: 'Required fields are marked with *.',
+    submissionMessages: {
+      invalidFormTitle: 'Please fix the highlighted fields.',
+      invalidFormMessage: 'Review the form and try again.',
+      successTitle: 'Registration submitted.',
+      successMessage: 'Thank you. Your registration was received successfully.',
+      errorTitle: 'Submission failed.',
+      serverErrorMessage: 'Could not submit the registration right now.',
+    },
+    validationMessages: {
+      invalidPayload: 'Invalid registration payload.',
+      genericReview: 'Please review the form and try again.',
+      parentNameRequired: 'Parent name is required.',
+      parentNameTooLong: 'Parent name must be 120 characters or less.',
+      studentNameRequired: 'Student name is required.',
+      studentNameTooLong: 'Student name must be 120 characters or less.',
+      emailRequired: 'Email is required.',
+      emailInvalid: 'Enter a valid email address.',
+      phoneRequired: 'Phone number is required.',
+      phoneInvalid: 'Enter a valid phone number.',
+      activitiesRequired: 'Select at least one activity.',
+      preferredDaysRequired: 'Select at least one preferred day.',
+      preferredDaysTooLong: 'Preferred days must be 80 characters or less.',
+      notesTooLong: 'Notes must be 1000 characters or less.',
+    },
     pricingTitle: 'Pricing',
     pricingItems: [
       { durationLabel: '1 day/week', price: '$75' },
@@ -81,4 +160,3 @@ export const DEFAULT_CMS_CONTENT: CmsContentBySectionKey = {
       'Get 40% OFF for 2 or more days of afterschool programs!',
   },
 };
-

@@ -11,12 +11,15 @@ import type {
   CmsSectionKey,
   MoreInformationContent,
   ProgramScheduleContent,
+  SiteChromeContent,
 } from '@/lib/cms/types';
 
 function sectionLabel(key: CmsSectionKey) {
   switch (key) {
     case 'about':
       return 'About Section';
+    case 'siteChrome':
+      return 'Site Chrome';
     case 'moreInformation':
       return 'More Information';
     case 'campHighlights':
@@ -238,6 +241,75 @@ function CmsMediaPicker({
   );
 }
 
+function CmsImageSelect({
+  title,
+  imageSrc,
+  imageAlt,
+  mediaItems,
+  previewClassName,
+  onImageSrcChange,
+  onImageAltChange,
+}: Readonly<{
+  title: string;
+  imageSrc: string;
+  imageAlt: string;
+  mediaItems: AdminMediaItem[];
+  previewClassName: string;
+  onImageSrcChange: (value: string) => void;
+  onImageAltChange: (value: string) => void;
+}>) {
+  const imageItems = mediaItems.filter((item) => item.kind === 'image');
+
+  return (
+    <div className="rounded-2xl border border-black/5 bg-white p-4">
+      <p className="text-sm font-semibold text-[#1a2945]/70">{title}</p>
+      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
+        <div className="space-y-4">
+          <label className="flex flex-col gap-2">
+            <span className="text-sm font-semibold text-[#1a2945]/70">
+              Image File
+            </span>
+            <select
+              value={imageSrc}
+              onChange={(event) => onImageSrcChange(event.target.value)}
+              className={getInputClassName()}
+            >
+              <option value="">Select an image</option>
+              {imageItems.map((item) => (
+                <option key={item.url} value={item.url}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <CmsField
+            label="Alt Text"
+            value={imageAlt}
+            onChange={onImageAltChange}
+          />
+        </div>
+
+        <div className="overflow-hidden rounded-2xl border border-black/5 bg-[#f8f4f2]">
+          {imageSrc ? (
+            <img
+              src={imageSrc}
+              alt={imageAlt || title}
+              className={`h-full w-full object-cover ${previewClassName}`}
+            />
+          ) : (
+            <div
+              className={`flex items-center justify-center px-6 text-center text-sm text-[#1a2945]/55 ${previewClassName}`}
+            >
+              No image selected yet.
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminCmsEditorAllSections() {
   const [sections, setSections] = useState<CmsContentBySectionKey | null>(null);
   const [drafts, setDrafts] = useState<CmsContentBySectionKey | null>(null);
@@ -420,6 +492,7 @@ export default function AdminCmsEditorAllSections() {
   }
 
   const about = drafts.about as AboutSectionContent;
+  const siteChrome = drafts.siteChrome as SiteChromeContent;
   const moreInformation = drafts.moreInformation as MoreInformationContent;
   const campHighlights = drafts.campHighlights as CampHighlightsContent;
   const programSchedule = drafts.programSchedule as ProgramScheduleContent;
@@ -493,6 +566,174 @@ export default function AdminCmsEditorAllSections() {
       ) : null}
 
       <div className="mx-auto mt-6 w-full max-w-6xl space-y-8">
+        <CmsSectionCard
+          title={sectionLabel('siteChrome')}
+          description="Navigation labels, logo, and the hero media at the top of the site."
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            <CmsField
+              label="Brand Title"
+              value={siteChrome.brandTitle}
+              onChange={(value) =>
+                updateDraft('siteChrome', { brandTitle: value })
+              }
+            />
+            <CmsField
+              label="Browser Title"
+              value={siteChrome.metadataTitle}
+              onChange={(value) =>
+                updateDraft('siteChrome', { metadataTitle: value })
+              }
+            />
+            <CmsField
+              label="Browser Description"
+              value={siteChrome.metadataDescription}
+              onChange={(value) =>
+                updateDraft('siteChrome', { metadataDescription: value })
+              }
+              multiline
+            />
+            <CmsField
+              label="Mobile Open Menu Label"
+              value={siteChrome.mobileMenuOpenLabel}
+              onChange={(value) =>
+                updateDraft('siteChrome', { mobileMenuOpenLabel: value })
+              }
+            />
+            <CmsField
+              label="Mobile Close Menu Label"
+              value={siteChrome.mobileMenuCloseLabel}
+              onChange={(value) =>
+                updateDraft('siteChrome', { mobileMenuCloseLabel: value })
+              }
+            />
+            <CmsField
+              label="Scroll To Top Label"
+              value={siteChrome.scrollToTopLabel}
+              onChange={(value) =>
+                updateDraft('siteChrome', { scrollToTopLabel: value })
+              }
+            />
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-[#1a2945]/70">
+                Navigation Items
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  updateDraft('siteChrome', {
+                    navItems: [
+                      ...siteChrome.navItems,
+                      { href: '#new-section', label: 'New Link' },
+                    ],
+                  })
+                }
+                className="rounded-xl border border-[#1a2945]/15 bg-white px-3 py-2 text-sm font-semibold text-[#1a2945] transition-colors hover:bg-white/80"
+              >
+                Add Link
+              </button>
+            </div>
+
+            {siteChrome.navItems.map((item, index) => (
+              <div
+                key={`${item.href}-${index}`}
+                className="rounded-2xl border border-black/5 bg-white p-4"
+              >
+                <p className="text-sm font-semibold text-[#1a2945]/70">
+                  Navigation Item {index + 1}
+                </p>
+                <div className="mt-3 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+                  <CmsField
+                    label="Label"
+                    value={item.label}
+                    onChange={(value) => {
+                      const nextItems = [...siteChrome.navItems];
+                      nextItems[index] = {
+                        ...nextItems[index],
+                        label: value,
+                      };
+                      updateDraft('siteChrome', { navItems: nextItems });
+                    }}
+                  />
+                  <CmsField
+                    label="Href"
+                    value={item.href}
+                    onChange={(value) => {
+                      const nextItems = [...siteChrome.navItems];
+                      nextItems[index] = {
+                        ...nextItems[index],
+                        href: value,
+                      };
+                      updateDraft('siteChrome', { navItems: nextItems });
+                    }}
+                  />
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateDraft('siteChrome', {
+                          navItems: siteChrome.navItems.filter(
+                            (_, itemIndex) => itemIndex !== index
+                          ),
+                        })
+                      }
+                      disabled={siteChrome.navItems.length === 1}
+                      className="rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 px-4 py-2 text-sm font-semibold text-[#7a1f1f] transition-colors hover:bg-[#c74444]/20 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-3">
+            <CmsImageSelect
+              title="Logo"
+              imageSrc={siteChrome.logoSrc}
+              imageAlt={siteChrome.logoAlt}
+              mediaItems={mediaItems}
+              previewClassName="aspect-[4/3]"
+              onImageSrcChange={(value) =>
+                updateDraft('siteChrome', { logoSrc: value })
+              }
+              onImageAltChange={(value) =>
+                updateDraft('siteChrome', { logoAlt: value })
+              }
+            />
+            <CmsImageSelect
+              title="Hero Image"
+              imageSrc={siteChrome.heroImageSrc}
+              imageAlt={siteChrome.heroImageAlt}
+              mediaItems={mediaItems}
+              previewClassName="aspect-square"
+              onImageSrcChange={(value) =>
+                updateDraft('siteChrome', { heroImageSrc: value })
+              }
+              onImageAltChange={(value) =>
+                updateDraft('siteChrome', { heroImageAlt: value })
+              }
+            />
+            <CmsImageSelect
+              title="Accent Image"
+              imageSrc={siteChrome.accentImageSrc}
+              imageAlt={siteChrome.accentImageAlt}
+              mediaItems={mediaItems}
+              previewClassName="aspect-square"
+              onImageSrcChange={(value) =>
+                updateDraft('siteChrome', { accentImageSrc: value })
+              }
+              onImageAltChange={(value) =>
+                updateDraft('siteChrome', { accentImageAlt: value })
+              }
+            />
+          </div>
+        </CmsSectionCard>
+
         <CmsSectionCard
           title={sectionLabel('about')}
           description="Top hero copy and call-to-action."
@@ -788,6 +1029,33 @@ export default function AdminCmsEditorAllSections() {
               }
             />
             <CmsField
+              label="Activity Options (comma separated)"
+              value={toCommaSeparated(afterschoolPrograms.activityOptions)}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  activityOptions: parseCommaSeparated(value),
+                })
+              }
+            />
+            <CmsField
+              label="Activity Schedule Label"
+              value={afterschoolPrograms.activityScheduleLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  activityScheduleLabel: value,
+                })
+              }
+            />
+            <CmsField
+              label="Activity Time Label"
+              value={afterschoolPrograms.activityTimeLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  activityTimeLabel: value,
+                })
+              }
+            />
+            <CmsField
               label="Registration Title"
               value={afterschoolPrograms.registrationTitle}
               onChange={(value) =>
@@ -806,6 +1074,427 @@ export default function AdminCmsEditorAllSections() {
               }
               multiline
             />
+            <CmsField
+              label="Parent Name Label"
+              value={afterschoolPrograms.parentNameLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  parentNameLabel: value,
+                })
+              }
+            />
+            <CmsField
+              label="Parent Name Placeholder"
+              value={afterschoolPrograms.parentNamePlaceholder}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  parentNamePlaceholder: value,
+                })
+              }
+            />
+            <CmsField
+              label="Student Name Label"
+              value={afterschoolPrograms.studentNameLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  studentNameLabel: value,
+                })
+              }
+            />
+            <CmsField
+              label="Student Name Placeholder"
+              value={afterschoolPrograms.studentNamePlaceholder}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  studentNamePlaceholder: value,
+                })
+              }
+            />
+            <CmsField
+              label="Email Label"
+              value={afterschoolPrograms.emailLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', { emailLabel: value })
+              }
+            />
+            <CmsField
+              label="Email Placeholder"
+              value={afterschoolPrograms.emailPlaceholder}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  emailPlaceholder: value,
+                })
+              }
+            />
+            <CmsField
+              label="Phone Label"
+              value={afterschoolPrograms.phoneLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', { phoneLabel: value })
+              }
+            />
+            <CmsField
+              label="Phone Placeholder"
+              value={afterschoolPrograms.phonePlaceholder}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  phonePlaceholder: value,
+                })
+              }
+            />
+            <CmsField
+              label="Phone Helper Text"
+              value={afterschoolPrograms.phoneHelperText}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  phoneHelperText: value,
+                })
+              }
+            />
+            <CmsField
+              label="Activities Label"
+              value={afterschoolPrograms.activitiesLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  activitiesLabel: value,
+                })
+              }
+            />
+            <CmsField
+              label="Preferred Days Label"
+              value={afterschoolPrograms.preferredDaysLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  preferredDaysLabel: value,
+                })
+              }
+            />
+            <CmsField
+              label="Preferred Day Options (comma separated)"
+              value={toCommaSeparated(afterschoolPrograms.preferredDayOptions)}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  preferredDayOptions: parseCommaSeparated(value),
+                })
+              }
+            />
+            <CmsField
+              label="Selected Count Suffix"
+              value={afterschoolPrograms.selectedCountSuffix}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  selectedCountSuffix: value,
+                })
+              }
+            />
+            <CmsField
+              label="Notes Label"
+              value={afterschoolPrograms.notesLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', { notesLabel: value })
+              }
+            />
+            <CmsField
+              label="Notes Placeholder"
+              value={afterschoolPrograms.notesPlaceholder}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  notesPlaceholder: value,
+                })
+              }
+              multiline
+            />
+            <CmsField
+              label="Submit Button Label"
+              value={afterschoolPrograms.submitButtonLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  submitButtonLabel: value,
+                })
+              }
+            />
+            <CmsField
+              label="Submitting Button Label"
+              value={afterschoolPrograms.submittingButtonLabel}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  submittingButtonLabel: value,
+                })
+              }
+            />
+            <CmsField
+              label="Required Fields Notice"
+              value={afterschoolPrograms.requiredFieldsNotice}
+              onChange={(value) =>
+                updateDraft('afterschoolPrograms', {
+                  requiredFieldsNotice: value,
+                })
+              }
+              multiline
+            />
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-sm font-semibold text-[#1a2945]/70">
+              Registration Status Messages
+            </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <CmsField
+                label="Validation Error Title"
+                value={afterschoolPrograms.submissionMessages.invalidFormTitle}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    submissionMessages: {
+                      ...afterschoolPrograms.submissionMessages,
+                      invalidFormTitle: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Validation Error Message"
+                value={afterschoolPrograms.submissionMessages.invalidFormMessage}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    submissionMessages: {
+                      ...afterschoolPrograms.submissionMessages,
+                      invalidFormMessage: value,
+                    },
+                  })
+                }
+                multiline
+              />
+              <CmsField
+                label="Success Title"
+                value={afterschoolPrograms.submissionMessages.successTitle}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    submissionMessages: {
+                      ...afterschoolPrograms.submissionMessages,
+                      successTitle: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Success Message"
+                value={afterschoolPrograms.submissionMessages.successMessage}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    submissionMessages: {
+                      ...afterschoolPrograms.submissionMessages,
+                      successMessage: value,
+                    },
+                  })
+                }
+                multiline
+              />
+              <CmsField
+                label="Submission Error Title"
+                value={afterschoolPrograms.submissionMessages.errorTitle}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    submissionMessages: {
+                      ...afterschoolPrograms.submissionMessages,
+                      errorTitle: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Server Error Message"
+                value={afterschoolPrograms.submissionMessages.serverErrorMessage}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    submissionMessages: {
+                      ...afterschoolPrograms.submissionMessages,
+                      serverErrorMessage: value,
+                    },
+                  })
+                }
+                multiline
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <p className="text-sm font-semibold text-[#1a2945]/70">
+              Registration Validation Messages
+            </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              <CmsField
+                label="Invalid Payload Message"
+                value={afterschoolPrograms.validationMessages.invalidPayload}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      invalidPayload: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Generic Review Message"
+                value={afterschoolPrograms.validationMessages.genericReview}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      genericReview: value,
+                    },
+                  })
+                }
+                multiline
+              />
+              <CmsField
+                label="Parent Required Message"
+                value={afterschoolPrograms.validationMessages.parentNameRequired}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      parentNameRequired: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Parent Max Length Message"
+                value={afterschoolPrograms.validationMessages.parentNameTooLong}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      parentNameTooLong: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Student Required Message"
+                value={afterschoolPrograms.validationMessages.studentNameRequired}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      studentNameRequired: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Student Max Length Message"
+                value={afterschoolPrograms.validationMessages.studentNameTooLong}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      studentNameTooLong: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Email Required Message"
+                value={afterschoolPrograms.validationMessages.emailRequired}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      emailRequired: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Email Invalid Message"
+                value={afterschoolPrograms.validationMessages.emailInvalid}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      emailInvalid: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Phone Required Message"
+                value={afterschoolPrograms.validationMessages.phoneRequired}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      phoneRequired: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Phone Invalid Message"
+                value={afterschoolPrograms.validationMessages.phoneInvalid}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      phoneInvalid: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Activities Required Message"
+                value={afterschoolPrograms.validationMessages.activitiesRequired}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      activitiesRequired: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Preferred Days Required Message"
+                value={afterschoolPrograms.validationMessages.preferredDaysRequired}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      preferredDaysRequired: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Preferred Days Max Length Message"
+                value={afterschoolPrograms.validationMessages.preferredDaysTooLong}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      preferredDaysTooLong: value,
+                    },
+                  })
+                }
+              />
+              <CmsField
+                label="Notes Max Length Message"
+                value={afterschoolPrograms.validationMessages.notesTooLong}
+                onChange={(value) =>
+                  updateDraft('afterschoolPrograms', {
+                    validationMessages: {
+                      ...afterschoolPrograms.validationMessages,
+                      notesTooLong: value,
+                    },
+                  })
+                }
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
             <CmsField
               label="Pricing Title"
               value={afterschoolPrograms.pricingTitle}

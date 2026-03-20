@@ -1,3 +1,6 @@
+import { DEFAULT_CMS_CONTENT } from '@/lib/cms/defaultContent';
+import type { RegistrationValidationMessages } from '@/lib/cms/types';
+
 export const ACTIVITY_OPTIONS = [
   'CHESS',
   'ABACUS',
@@ -6,7 +9,7 @@ export const ACTIVITY_OPTIONS = [
   'HOMEWORK HELP',
 ] as const;
 
-export type ActivityOption = (typeof ACTIVITY_OPTIONS)[number];
+export type ActivityOption = string;
 
 export const PREFERRED_DAY_OPTIONS = [
   'Monday',
@@ -16,7 +19,7 @@ export const PREFERRED_DAY_OPTIONS = [
   'Friday',
 ] as const;
 
-export type PreferredDayOption = (typeof PREFERRED_DAY_OPTIONS)[number];
+export type PreferredDayOption = string;
 
 export type RegistrationPayload = {
   parentName: string;
@@ -34,6 +37,12 @@ export type RegistrationFieldErrors = Partial<
   Record<RegistrationField, string>
 >;
 
+export type RegistrationValidationConfig = {
+  activityOptions?: readonly string[];
+  preferredDayOptions?: readonly string[];
+  validationMessages?: RegistrationValidationMessages;
+};
+
 type ValidationResult =
   | {
       success: true;
@@ -48,167 +57,185 @@ type ValidationResult =
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_PATTERN = /^[0-9+().\-\s]{7,20}$/;
 
-export const DEFAULT_PREFERRED_DAYS =
-  'Monday, Tuesday, Wednesday, Thursday, Friday';
+export const DEFAULT_PREFERRED_DAYS = PREFERRED_DAY_OPTIONS.join(', ');
 export const MAX_NAME_LENGTH = 120;
 export const MAX_PREFERRED_DAYS_LENGTH = 80;
 export const MAX_NOTES_LENGTH = 1000;
-
-const PREFERRED_DAY_LOOKUP: Record<string, PreferredDayOption> = {
-  monday: 'Monday',
-  tuesday: 'Tuesday',
-  wednesday: 'Wednesday',
-  thursday: 'Thursday',
-  friday: 'Friday',
-};
+const DEFAULT_VALIDATION_MESSAGES =
+  DEFAULT_CMS_CONTENT.afterschoolPrograms.validationMessages;
 
 function getTrimmedString(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
-function isActivityOption(value: string): value is ActivityOption {
-  return ACTIVITY_OPTIONS.includes(value as ActivityOption);
+function normalizeAllowedOptions(options: readonly string[]) {
+  return Array.from(
+    new Set(
+      options
+        .map((option) => getTrimmedString(option))
+        .filter(Boolean)
+    )
+  );
 }
 
-function toPreferredDayOption(value: string): PreferredDayOption | null {
-  return PREFERRED_DAY_LOOKUP[value.trim().toLowerCase()] || null;
+function buildAllowedOptionLookup(options: readonly string[]) {
+  const lookup = new Map<string, string>();
+
+  for (const option of normalizeAllowedOptions(options)) {
+    lookup.set(option.toLowerCase(), option);
+  }
+
+  return lookup;
 }
 
-export function getPreferredDaySelections(value: unknown): PreferredDayOption[] {
-  if (Array.isArray(value)) {
-    const days = value
-      .filter((item): item is string => typeof item === 'string')
-      .map((item) => toPreferredDayOption(item))
-      .filter((item): item is PreferredDayOption => Boolean(item));
+function normalizeOptionSelections(
+  value: unknown,
+  options: readonly string[]
+) {
+  const lookup = buildAllowedOptionLookup(options);
 
-    return Array.from(new Set(days));
-  }
+  const rawValues = Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : getTrimmedString(value)
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean);
 
-  const textValue = getTrimmedString(value);
-
-  if (!textValue) {
-    return [];
-  }
-
-  if (textValue.toLowerCase() === 'monday to friday') {
-    return [...PREFERRED_DAY_OPTIONS];
-  }
-
-  const days = textValue
-    .split(',')
-    .map((item) => toPreferredDayOption(item))
-    .filter((item): item is PreferredDayOption => Boolean(item));
-
-  return Array.from(new Set(days));
+  return Array.from(
+    new Set(
+      rawValues
+        .map((item) => lookup.get(item.toLowerCase()) || null)
+        .filter((item): item is string => Boolean(item))
+    )
+  );
 }
 
-export function formatPreferredDays(days: PreferredDayOption[]) {
+export function getPreferredDaySelections(
+  value: unknown,
+  preferredDayOptions: readonly string[] = PREFERRED_DAY_OPTIONS
+) {
+  return normalizeOptionSelections(value, preferredDayOptions);
+}
+
+export function formatPreferredDays(days: readonly string[]) {
   return days.join(', ');
 }
 
+function getValidationMessages(config: RegistrationValidationConfig) {
+  return config.validationMessages ?? DEFAULT_VALIDATION_MESSAGES;
+}
+
 export function normalizeRegistrationPayload(
-  input: Partial<RegistrationPayload> | Record<string, unknown>
+  input: Partial<RegistrationPayload> | Record<string, unknown>,
+  config: RegistrationValidationConfig = {}
 ): RegistrationPayload {
   const payload = input as Record<string, unknown>;
-  const preferredDaySelections = getPreferredDaySelections(payload.preferredDays);
+  const activityOptions = config.activityOptions ?? ACTIVITY_OPTIONS;
+  const preferredDayOptions = config.preferredDayOptions ?? PREFERRED_DAY_OPTIONS;
 
   return {
     parentName: getTrimmedString(payload.parentName),
     studentName: getTrimmedString(payload.studentName),
     email: getTrimmedString(payload.email).toLowerCase(),
     phone: getTrimmedString(payload.phone),
-    preferredDays: formatPreferredDays(preferredDaySelections),
+    preferredDays: formatPreferredDays(
+      getPreferredDaySelections(payload.preferredDays, preferredDayOptions)
+    ),
     notes: getTrimmedString(payload.notes),
-    activities: Array.isArray(payload.activities)
-      ? Array.from(
-          new Set(
-            payload.activities
-              .filter((value): value is string => typeof value === 'string')
-              .map((value) => value.trim().toUpperCase())
-              .filter(isActivityOption)
-          )
-        )
-      : [],
+    activities: normalizeOptionSelections(payload.activities, activityOptions),
   };
 }
 
 export function getRegistrationFieldErrors(
-  input: Partial<RegistrationPayload> | Record<string, unknown>
+  input: Partial<RegistrationPayload> | Record<string, unknown>,
+  config: RegistrationValidationConfig = {}
 ) {
-  const data = normalizeRegistrationPayload(input);
+  const data = normalizeRegistrationPayload(input, config);
+  const messages = getValidationMessages(config);
   const errors: RegistrationFieldErrors = {};
 
   if (!data.parentName) {
-    errors.parentName = 'Parent name is required.';
+    errors.parentName = messages.parentNameRequired;
   } else if (data.parentName.length > MAX_NAME_LENGTH) {
-    errors.parentName = `Parent name must be ${MAX_NAME_LENGTH} characters or less.`;
+    errors.parentName = messages.parentNameTooLong;
   }
 
   if (!data.studentName) {
-    errors.studentName = 'Student name is required.';
+    errors.studentName = messages.studentNameRequired;
   } else if (data.studentName.length > MAX_NAME_LENGTH) {
-    errors.studentName = `Student name must be ${MAX_NAME_LENGTH} characters or less.`;
+    errors.studentName = messages.studentNameTooLong;
   }
 
   if (!data.email) {
-    errors.email = 'Email is required.';
+    errors.email = messages.emailRequired;
   } else if (!EMAIL_PATTERN.test(data.email)) {
-    errors.email = 'Enter a valid email address.';
+    errors.email = messages.emailInvalid;
   }
 
   if (!data.phone) {
-    errors.phone = 'Phone number is required.';
+    errors.phone = messages.phoneRequired;
   } else if (!PHONE_PATTERN.test(data.phone)) {
-    errors.phone = 'Enter a valid phone number.';
+    errors.phone = messages.phoneInvalid;
   }
 
   if (data.activities.length === 0) {
-    errors.activities = 'Select at least one activity.';
+    errors.activities = messages.activitiesRequired;
   }
 
   if (!data.preferredDays) {
-    errors.preferredDays = 'Select at least one preferred day.';
+    errors.preferredDays = messages.preferredDaysRequired;
   }
 
   if (
     data.preferredDays &&
     data.preferredDays.length > MAX_PREFERRED_DAYS_LENGTH
   ) {
-    errors.preferredDays = `Preferred days must be ${MAX_PREFERRED_DAYS_LENGTH} characters or less.`;
+    errors.preferredDays = messages.preferredDaysTooLong;
   }
 
   if (data.notes.length > MAX_NOTES_LENGTH) {
-    errors.notes = `Notes must be ${MAX_NOTES_LENGTH} characters or less.`;
+    errors.notes = messages.notesTooLong;
   }
 
   return errors;
 }
 
-export function getRegistrationErrorMessage(errors: RegistrationFieldErrors) {
+export function getRegistrationErrorMessage(
+  errors: RegistrationFieldErrors,
+  messages: RegistrationValidationMessages = DEFAULT_VALIDATION_MESSAGES
+) {
   const firstMessage = Object.values(errors).find(Boolean);
-  return firstMessage || 'Please review the form and try again.';
+  return firstMessage || messages.genericReview;
 }
 
 export function hasRegistrationFieldErrors(errors: RegistrationFieldErrors) {
   return Object.keys(errors).length > 0;
 }
 
-export function validateRegistrationPayload(input: unknown): ValidationResult {
+export function validateRegistrationPayload(
+  input: unknown,
+  config: RegistrationValidationConfig = {}
+): ValidationResult {
+  const messages = getValidationMessages(config);
+
   if (!input || typeof input !== 'object') {
     return {
       success: false,
-      error: 'Invalid registration payload.',
+      error: messages.invalidPayload,
       fieldErrors: {},
     };
   }
 
-  const data = normalizeRegistrationPayload(input as Record<string, unknown>);
-  const fieldErrors = getRegistrationFieldErrors(data);
+  const data = normalizeRegistrationPayload(
+    input as Record<string, unknown>,
+    config
+  );
+  const fieldErrors = getRegistrationFieldErrors(data, config);
 
   if (hasRegistrationFieldErrors(fieldErrors)) {
     return {
       success: false,
-      error: getRegistrationErrorMessage(fieldErrors),
+      error: getRegistrationErrorMessage(fieldErrors, messages),
       fieldErrors,
     };
   }

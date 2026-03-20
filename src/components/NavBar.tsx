@@ -3,20 +3,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import type { SiteChromeContent } from '@/lib/cms/types';
 
-const ITEMS = [
-  { href: '#about', label: 'About' },
-  { href: '#more-information', label: 'More Information' },
-  { href: '#afterschool', label: 'Afterschool Programs' },
-  { href: '#schedule', label: 'Schedule' },
-];
-
-export default function NavBar() {
+export default function NavBar({
+  cms,
+}: Readonly<{ cms: SiteChromeContent }>) {
   const [activeSection, setActiveSection] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
-    const sectionIds = ITEMS.map((item) => item.href.replace('#', ''));
+    const sectionIds = cms.navItems.map((item) => item.href.replace('#', ''));
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -40,7 +36,7 @@ export default function NavBar() {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [cms.navItems]);
 
   useEffect(() => {
     document.body.style.overflow = isMenuOpen ? 'hidden' : '';
@@ -60,20 +56,20 @@ export default function NavBar() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 font-extrabold text-[#c74444]">
             <Image
-              src="/exceed-logo.png"
-              alt="Exceed Learning Center logo"
+              src={cms.logoSrc}
+              alt={cms.logoAlt}
               width={40}
               height={46}
               className="h-10 w-auto object-contain"
               priority
             />
             <span className="text-sm sm:text-base">
-              Kids After School Programs
+              {cms.brandTitle}
             </span>
           </Link>
 
           <ul className="hidden items-center gap-6 text-sm font-semibold text-[#1a2945] lg:flex">
-            {ITEMS.map((item) => {
+            {cms.navItems.map((item) => {
               const sectionId = item.href.replace('#', '');
               const isActive = activeSection === sectionId;
 
@@ -100,7 +96,9 @@ export default function NavBar() {
           <button
             onClick={() => setIsMenuOpen((current) => !current)}
             className="relative flex h-10 w-10 items-center justify-center lg:hidden"
-            aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={
+              isMenuOpen ? cms.mobileMenuCloseLabel : cms.mobileMenuOpenLabel
+            }
           >
             <div className="relative flex h-5 w-6 flex-col justify-between">
               <span
@@ -136,7 +134,7 @@ export default function NavBar() {
         }`}
       >
         <ul className="flex flex-col py-4">
-          {ITEMS.map((item) => {
+          {cms.navItems.map((item) => {
             const sectionId = item.href.replace('#', '');
             const isActive = activeSection === sectionId;
 

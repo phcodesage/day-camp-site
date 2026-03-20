@@ -7,6 +7,48 @@ import type {
   CmsSectionKey,
 } from '@/lib/cms/types';
 
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function mergeCmsValues<T>(defaults: T, savedData: unknown): T {
+  if (!isPlainObject(defaults) || !isPlainObject(savedData)) {
+    return (savedData ?? defaults) as T;
+  }
+
+  const result: Record<string, unknown> = {
+    ...(defaults as Record<string, unknown>),
+  };
+
+  for (const [key, value] of Object.entries(savedData)) {
+    const defaultValue = result[key];
+
+    if (Array.isArray(value)) {
+      result[key] = value;
+      continue;
+    }
+
+    if (isPlainObject(defaultValue) && isPlainObject(value)) {
+      result[key] = mergeCmsValues(defaultValue, value);
+      continue;
+    }
+
+    result[key] = value;
+  }
+
+  return result as T;
+}
+
+export function mergeCmsSectionContent<K extends CmsSectionKey>(
+  sectionKey: K,
+  savedData: Partial<CmsSectionContent<K>> | Record<string, unknown>
+): CmsSectionContent<K> {
+  return mergeCmsValues(
+    DEFAULT_CMS_CONTENT[sectionKey],
+    savedData
+  ) as CmsSectionContent<K>;
+}
+
 export async function getCmsSectionContent<K extends CmsSectionKey>(
   sectionKey: K
 ): Promise<CmsSectionContent<K>> {
@@ -23,10 +65,7 @@ export async function getCmsSectionContent<K extends CmsSectionKey>(
     }
 
     const savedData = (doc.data || {}) as Partial<CmsSectionContent<K>>;
-    return {
-      ...DEFAULT_CMS_CONTENT[sectionKey],
-      ...savedData,
-    } as CmsSectionContent<K>;
+    return mergeCmsSectionContent(sectionKey, savedData);
   } catch (error) {
     console.error(`CMS read failed for section "${sectionKey}":`, error);
     return DEFAULT_CMS_CONTENT[sectionKey] as CmsSectionContent<K>;
@@ -44,10 +83,7 @@ export async function getAllCmsContent(): Promise<CmsContentBySectionKey> {
   for (const doc of docs) {
     const key = doc.sectionKey as CmsSectionKey;
     const savedData = (doc.data || {}) as Record<string, unknown>;
-    result[key] = {
-      ...(result[key] as Record<string, unknown>),
-      ...savedData,
-    };
+    result[key] = mergeCmsSectionContent(key, savedData);
   }
 
   return result as CmsContentBySectionKey;

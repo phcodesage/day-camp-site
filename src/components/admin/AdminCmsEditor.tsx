@@ -9,6 +9,7 @@ import type {
   MoreInformationContent,
   ProgramScheduleContent,
   AfterschoolProgramsContent,
+  SiteChromeContent,
 } from '@/lib/cms/types';
 
 const SECTION_KEYS: CmsSectionKey[] = [
@@ -21,6 +22,8 @@ const SECTION_KEYS: CmsSectionKey[] = [
 
 function sectionLabel(key: CmsSectionKey) {
   switch (key) {
+    case 'siteChrome':
+      return 'Site Chrome';
     case 'about':
       return 'About Section';
     case 'moreInformation':
@@ -89,6 +92,7 @@ export default function AdminCmsEditor() {
 
   const contentAs = useMemo(() => {
     return {
+      siteChrome: draft as SiteChromeContent | null,
       about: draft as AboutSectionContent | null,
       moreInformation: draft as MoreInformationContent | null,
       campHighlights: draft as CampHighlightsContent | null,
@@ -755,4 +759,3 @@ export default function AdminCmsEditor() {
     </div>
   );
 }
-

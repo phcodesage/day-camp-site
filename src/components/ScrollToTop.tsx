@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from 'react';
 
-export default function ScrollToTop() {
+export default function ScrollToTop({
+  label,
+}: Readonly<{
+  label: string;
+}>) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -24,7 +28,7 @@ export default function ScrollToTop() {
   return (
     <button
       onClick={scrollToTop}
-      aria-label="Scroll to top"
+      aria-label={label}
       className={`fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-[#c74444] text-white shadow-lg transition-all duration-300 ease-out hover:scale-110 hover:bg-[#a63535] hover:shadow-xl active:scale-95 ${
         isVisible
           ? 'translate-y-0 opacity-100'

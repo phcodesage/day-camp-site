@@ -1,3 +1,4 @@
+import { getCmsSectionContent } from '@/lib/cms/cms';
 import AboutSection from './components/AboutSection';
 import AfterschoolProgramsSection from './components/AfterschoolProgramsSection';
 import CampHighlights from './components/CampHighlights';
@@ -6,16 +7,18 @@ import NavBar from './components/NavBar';
 import ProgramSchedule from './components/ProgramSchedule';
 import ScrollToTop from './components/ScrollToTop';
 
-function App() {
+async function App() {
+  const siteChrome = await getCmsSectionContent('siteChrome');
+
   return (
     <div className="relative min-h-screen w-full bg-[#f5e6e0] pt-16">
-      <NavBar />
-      <ScrollToTop />
+      <NavBar cms={siteChrome} />
+      <ScrollToTop label={siteChrome.scrollToTopLabel} />
 
       <main>
         <img
-          src="/images/kids/blue-leaf.png"
-          alt="Decorative blue leaf"
+          src={siteChrome.accentImageSrc}
+          alt={siteChrome.accentImageAlt}
           className="pointer-events-none absolute right-0 top-0 h-72 w-72 translate-x-24 -translate-y-12 select-none object-contain opacity-90"
           loading="lazy"
         />
@@ -66,8 +69,8 @@ function App() {
                 <div className="relative z-10 rounded-2xl bg-white p-6 shadow-lg">
                   <div className="aspect-square overflow-hidden rounded-xl">
                     <img
-                      src="/images/kids/chess-kids.jpg"
-                      alt="Kids playing chess at camp"
+                      src={siteChrome.heroImageSrc}
+                      alt={siteChrome.heroImageAlt}
                       className="h-full w-full object-cover"
                       loading="lazy"
                     />

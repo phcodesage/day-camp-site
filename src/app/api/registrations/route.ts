@@ -5,18 +5,62 @@ import {
   type RegistrationFieldErrors,
   validateRegistrationPayload,
 } from '@/lib/registration';
-import { connectToDatabase, getMongoErrorMessage } from '@/lib/mongodb';
+import { getCmsSectionContent } from '@/lib/cms/cms';
+import type { RegistrationValidationMessages } from '@/lib/cms/types';
+import { connectToDatabase } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
 
 export const runtime = 'nodejs';
 
-function getMongooseFieldErrors(error: mongoose.Error.ValidationError) {
+function getMongooseFieldMessage(
+  fieldName: keyof RegistrationFieldErrors,
+  kind: string | undefined,
+  messages: RegistrationValidationMessages
+) {
+  switch (fieldName) {
+    case 'parentName':
+      return kind === 'maxlength'
+        ? messages.parentNameTooLong
+        : messages.parentNameRequired;
+    case 'studentName':
+      return kind === 'maxlength'
+        ? messages.studentNameTooLong
+        : messages.studentNameRequired;
+    case 'email':
+      return kind === 'required'
+        ? messages.emailRequired
+        : messages.emailInvalid;
+    case 'phone':
+      return kind === 'required'
+        ? messages.phoneRequired
+        : messages.phoneInvalid;
+    case 'activities':
+      return messages.activitiesRequired;
+    case 'preferredDays':
+      return kind === 'maxlength'
+        ? messages.preferredDaysTooLong
+        : messages.preferredDaysRequired;
+    case 'notes':
+      return messages.notesTooLong;
+    default:
+      return messages.genericReview;
+  }
+}
+
+function getMongooseFieldErrors(
+  error: mongoose.Error.ValidationError,
+  messages: RegistrationValidationMessages
+) {
   const fieldErrors: RegistrationFieldErrors = {};
 
   for (const [fieldName, fieldError] of Object.entries(error.errors)) {
     if (fieldName in Registration.schema.obj) {
       fieldErrors[fieldName as keyof RegistrationFieldErrors] =
-        fieldError.message;
+        getMongooseFieldMessage(
+          fieldName as keyof RegistrationFieldErrors,
+          'kind' in fieldError ? fieldError.kind : undefined,
+          messages
+        );
     }
   }
 
@@ -24,18 +68,23 @@ function getMongooseFieldErrors(error: mongoose.Error.ValidationError) {
 }
 
 export async function POST(request: Request) {
+  const registrationContent = await getCmsSectionContent('afterschoolPrograms');
   let body: unknown;
 
   try {
     body = await request.json();
   } catch {
     return NextResponse.json(
-      { error: 'Invalid request body. Expected JSON.' },
+      { error: registrationContent.validationMessages.invalidPayload },
       { status: 400 }
     );
   }
 
-  const validation = validateRegistrationPayload(body);
+  const validation = validateRegistrationPayload(body, {
+    activityOptions: registrationContent.activityOptions,
+    preferredDayOptions: registrationContent.preferredDayOptions,
+    validationMessages: registrationContent.validationMessages,
+  });
 
   if (!validation.success) {
     return NextResponse.json(
@@ -66,8 +115,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        message:
-          'Registration submitted successfully. We will contact you shortly.',
+        message: registrationContent.submissionMessages.successMessage,
       },
       { status: 201 }
     );
@@ -75,11 +123,17 @@ export async function POST(request: Request) {
     console.error('Registration failed:', error);
 
     if (error instanceof mongoose.Error.ValidationError) {
-      const fieldErrors = getMongooseFieldErrors(error);
+      const fieldErrors = getMongooseFieldErrors(
+        error,
+        registrationContent.validationMessages
+      );
 
       return NextResponse.json(
         {
-          error: getRegistrationErrorMessage(fieldErrors),
+          error: getRegistrationErrorMessage(
+            fieldErrors,
+            registrationContent.validationMessages
+          ),
           fieldErrors,
         },
         { status: 400 }
@@ -88,10 +142,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        error: getMongoErrorMessage(
-          error,
-          'Could not save the registration right now.'
-        ),
+        error: registrationContent.submissionMessages.serverErrorMessage,
       },
       { status: 500 }
     );

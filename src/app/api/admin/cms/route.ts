@@ -2,15 +2,16 @@ import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { requireAdminOrJsonResponse } from '@/lib/admin/requireAdmin';
 import {
+  mergeCmsSectionContent,
   upsertCmsSectionContent,
 } from '@/lib/cms/cms';
-import { DEFAULT_CMS_CONTENT } from '@/lib/cms/defaultContent';
 import type { CmsSectionKey } from '@/lib/cms/types';
 import { getMongoErrorMessage } from '@/lib/mongodb';
 
 export const runtime = 'nodejs';
 
 const ALLOWED_SECTION_KEYS: CmsSectionKey[] = [
+  'siteChrome',
   'about',
   'moreInformation',
   'campHighlights',
@@ -53,10 +54,10 @@ export async function PUT(request: Request) {
   }
 
   const key = sectionKey as CmsSectionKey;
-  const merged = {
-    ...DEFAULT_CMS_CONTENT[key],
-    ...(data as Record<string, unknown>),
-  } as unknown as (typeof DEFAULT_CMS_CONTENT)[typeof key];
+  const merged = mergeCmsSectionContent(
+    key,
+    data as Record<string, unknown>
+  );
 
   try {
     await upsertCmsSectionContent(
