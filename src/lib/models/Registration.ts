@@ -50,7 +50,7 @@ const registrationSchema = new Schema<IRegistration>(
     },
     preferredDays: {
       type: String,
-      default: 'Monday to Friday',
+      required: [true, 'Select at least one preferred day'],
       maxlength: [80, 'Preferred days must not exceed 80 characters'],
       trim: true,
     },

@@ -4,12 +4,15 @@ import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { type ChangeEvent, type FocusEvent, type FormEvent, useState } from 'react';
 import {
   ACTIVITY_OPTIONS,
-  DEFAULT_PREFERRED_DAYS,
   MAX_NAME_LENGTH,
   MAX_NOTES_LENGTH,
+  PREFERRED_DAY_OPTIONS,
+  formatPreferredDays,
   getRegistrationFieldErrors,
+  getPreferredDaySelections,
   hasRegistrationFieldErrors,
   type ActivityOption,
+  type PreferredDayOption,
   type RegistrationField,
   type RegistrationFieldErrors,
   type RegistrationPayload,
@@ -39,7 +42,7 @@ function createInitialFormState(): RegistrationPayload {
     email: '',
     phone: '',
     activities: [],
-    preferredDays: DEFAULT_PREFERRED_DAYS,
+    preferredDays: '',
     notes: '',
   };
 }
@@ -60,6 +63,7 @@ export default function AfterschoolPrograms() {
   const [touchedFields, setTouchedFields] = useState<TouchedFields>({});
   const [submissionState, setSubmissionState] = useState<SubmissionState>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const selectedPreferredDays = getPreferredDaySelections(formData.preferredDays);
 
   const applySingleFieldValidation = (
     field: RegistrationField,
@@ -141,6 +145,40 @@ export default function AfterschoolPrograms() {
     applySingleFieldValidation('activities', formData);
   };
 
+  const handlePreferredDayChange = (
+    day: PreferredDayOption,
+    checked: boolean
+  ) => {
+    setSubmissionState(null);
+
+    setFormData((current) => {
+      const currentDays = getPreferredDaySelections(current.preferredDays);
+      const nextDays = checked
+        ? Array.from(new Set([...currentDays, day]))
+        : currentDays.filter((item) => item !== day);
+
+      const nextFormData = {
+        ...current,
+        preferredDays: formatPreferredDays(nextDays),
+      };
+
+      if (touchedFields.preferredDays || fieldErrors.preferredDays) {
+        applySingleFieldValidation('preferredDays', nextFormData);
+      }
+
+      return nextFormData;
+    });
+  };
+
+  const handlePreferredDaysBlur = () => {
+    setTouchedFields((current) => ({
+      ...current,
+      preferredDays: true,
+    }));
+
+    applySingleFieldValidation('preferredDays', formData);
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -154,6 +192,7 @@ export default function AfterschoolPrograms() {
         email: true,
         phone: true,
         activities: true,
+        preferredDays: true,
         notes: true,
       });
       setSubmissionState({
@@ -190,6 +229,7 @@ export default function AfterschoolPrograms() {
             email: true,
             phone: true,
             activities: true,
+            preferredDays: true,
             notes: true,
           }));
         }
@@ -257,8 +297,8 @@ export default function AfterschoolPrograms() {
               Registration Form
             </h3>
             <p className="mt-3 text-sm text-[#1a2945]/75">
-              Fill out the form below and we will follow up to confirm the
-              schedule details.
+              Fill up the form below to register and we will contact you to
+              settle your payment.
             </p>
           </div>
 
@@ -452,17 +492,51 @@ export default function AfterschoolPrograms() {
               </p>
             </div>
 
-            <label className="flex flex-col gap-2 md:col-span-2">
-              <span className="font-semibold">Preferred Days</span>
-              <input
-                id="preferredDays"
-                name="preferredDays"
-                type="text"
-                className={getInputClassName(Boolean(fieldErrors.preferredDays))}
-                value={formData.preferredDays}
-                readOnly
-              />
-            </label>
+            <div className="space-y-3 md:col-span-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="font-semibold">
+                  Preferred Days <span className="text-[#c74444]">*</span>
+                </p>
+                <p className="text-sm text-[#1a2945]/65">
+                  {selectedPreferredDays.length} selected
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+                {PREFERRED_DAY_OPTIONS.map((day) => {
+                  const isSelected = selectedPreferredDays.includes(day);
+
+                  return (
+                    <label
+                      key={`day-${day}`}
+                      className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-sm transition-colors ${
+                        isSelected
+                          ? 'border-[#1a7b8e]/40 bg-[#1a7b8e]/10'
+                          : fieldErrors.preferredDays && touchedFields.preferredDays
+                            ? 'border-[#c74444]/35 bg-white'
+                            : 'border-[#1a2945]/20 bg-white'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        name="preferredDays"
+                        value={day}
+                        checked={isSelected}
+                        onChange={(event) =>
+                          handlePreferredDayChange(day, event.target.checked)
+                        }
+                        onBlur={handlePreferredDaysBlur}
+                      />
+                      <span>{day}</span>
+                    </label>
+                  );
+                })}
+              </div>
+
+              <p className="text-xs text-[#c74444]">
+                {touchedFields.preferredDays ? fieldErrors.preferredDays : ''}
+              </p>
+            </div>
 
             <label className="flex flex-col gap-2 md:col-span-2">
               <span className="font-semibold">Notes</span>
