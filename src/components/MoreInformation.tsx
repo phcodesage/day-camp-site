@@ -28,26 +28,22 @@ export default async function MoreInformation() {
           </p>
         </div>
 
-        {videoUrl ? (
-          <div className="pt-4">
-            <div className="mx-auto max-w-2xl overflow-hidden rounded-2xl shadow-xl">
+        <div className="pt-4">
+          <div className="mx-auto max-w-2xl overflow-hidden rounded-2xl shadow-xl">
+            {videoUrl ? (
               <video
                 src={videoUrl}
                 controls
                 className="h-auto w-full rounded-2xl"
               />
-            </div>
-          </div>
-        ) : null}
-
-        <div className="pt-4">
-          <div className="mx-auto max-w-2xl overflow-hidden rounded-2xl shadow-xl">
-            <img
-              src={content.imageSrc}
-              alt={content.imageAlt}
-              className="aspect-[4/3] h-full w-full object-cover"
-              loading="lazy"
-            />
+            ) : (
+              <img
+                src={content.imageSrc}
+                alt={content.imageAlt}
+                className="aspect-[4/3] h-full w-full object-cover"
+                loading="lazy"
+              />
+            )}
           </div>
         </div>
       </div>

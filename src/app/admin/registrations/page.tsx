@@ -84,9 +84,23 @@ export default function AdminRegistrationsPage() {
 
   return (
     <div className="mx-auto w-full max-w-6xl p-6">
-      <h1 className="text-2xl font-extrabold text-[#1a2945]">
-        Registrations
-      </h1>
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-extrabold text-[#1a2945]">
+            Registrations
+          </h1>
+          <p className="mt-1 text-sm text-[#1a2945]/70">
+            {items.length} registration{items.length === 1 ? '' : 's'} loaded
+          </p>
+        </div>
+
+        <a
+          href="/api/admin/registrations/export"
+          className="inline-flex items-center justify-center rounded-xl bg-[#1a2945] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#0e243a]"
+        >
+          Download TXT
+        </a>
+      </div>
 
       {error ? (
         <div className="mt-4 rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 p-4 text-sm text-[#7a1f1f]">
@@ -158,4 +172,3 @@ export default function AdminRegistrationsPage() {
     </div>
   );
 }
-

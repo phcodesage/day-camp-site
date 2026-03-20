@@ -1,6 +1,5 @@
-import mongoose from 'mongoose';
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import { connectToDatabase, getMongoErrorMessage } from '@/lib/mongodb';
 import PageView from '@/lib/models/PageView';
 import Visit from '@/lib/models/Visit';
 import { requireAdminOrJsonResponse } from '@/lib/admin/requireAdmin';
@@ -21,6 +20,7 @@ export async function GET() {
         Visit.aggregate([
           { $group: { _id: '$device', count: { $sum: 1 } } },
           { $project: { device: '$_id', count: 1, _id: 0 } },
+          { $sort: { count: -1, device: 1 } },
         ]),
       ]
     );
@@ -41,18 +41,12 @@ export async function GET() {
       visitsByDevice,
     });
   } catch (error) {
-    if (error instanceof mongoose.Error) {
-      return NextResponse.json(
-        { error: 'Database error.' },
-        { status: 500 }
-      );
-    }
-
     console.error('Analytics summary failed:', error);
     return NextResponse.json(
-      { error: 'Could not load analytics.' },
+      {
+        error: getMongoErrorMessage(error, 'Could not load analytics.'),
+      },
       { status: 500 }
     );
   }
 }
-

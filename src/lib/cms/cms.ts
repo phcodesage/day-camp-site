@@ -1,4 +1,4 @@
-import { connectToDatabase } from '@/lib/mongodb';
+import { connectToDatabase, isMongoConfigured } from '@/lib/mongodb';
 import CmsSectionContentModel from '@/lib/models/CmsSectionContent';
 import { DEFAULT_CMS_CONTENT } from '@/lib/cms/defaultContent';
 import type {
@@ -10,18 +10,27 @@ import type {
 export async function getCmsSectionContent<K extends CmsSectionKey>(
   sectionKey: K
 ): Promise<CmsSectionContent<K>> {
-  await connectToDatabase();
-
-  const doc = await CmsSectionContentModel.findOne({ sectionKey }).lean();
-  if (!doc) {
+  if (!isMongoConfigured()) {
     return DEFAULT_CMS_CONTENT[sectionKey] as CmsSectionContent<K>;
   }
 
-  const savedData = (doc.data || {}) as Partial<CmsSectionContent<K>>;
-  return {
-    ...DEFAULT_CMS_CONTENT[sectionKey],
-    ...savedData,
-  } as CmsSectionContent<K>;
+  try {
+    await connectToDatabase();
+
+    const doc = await CmsSectionContentModel.findOne({ sectionKey }).lean();
+    if (!doc) {
+      return DEFAULT_CMS_CONTENT[sectionKey] as CmsSectionContent<K>;
+    }
+
+    const savedData = (doc.data || {}) as Partial<CmsSectionContent<K>>;
+    return {
+      ...DEFAULT_CMS_CONTENT[sectionKey],
+      ...savedData,
+    } as CmsSectionContent<K>;
+  } catch (error) {
+    console.error(`CMS read failed for section "${sectionKey}":`, error);
+    return DEFAULT_CMS_CONTENT[sectionKey] as CmsSectionContent<K>;
+  }
 }
 
 export async function getAllCmsContent(): Promise<CmsContentBySectionKey> {
@@ -56,4 +65,3 @@ export async function upsertCmsSectionContent(
     { upsert: true }
   );
 }
-

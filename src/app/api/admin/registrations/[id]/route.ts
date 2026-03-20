@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import { connectToDatabase, getMongoErrorMessage } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
 import { requireAdminOrJsonResponse } from '@/lib/admin/requireAdmin';
 
@@ -30,9 +30,10 @@ export async function DELETE(
   } catch (error) {
     console.error('Admin registration delete failed:', error);
     return NextResponse.json(
-      { error: 'Could not delete registration.' },
+      {
+        error: getMongoErrorMessage(error, 'Could not delete registration.'),
+      },
       { status: 500 }
     );
   }
 }
-

@@ -3,6 +3,16 @@
 import { useEffect } from 'react';
 
 const VISIT_SESSION_COOKIE = 'visit_session_id';
+const PAGE_VIEW_DEDUP_WINDOW_MS = 2000;
+
+declare global {
+  interface Window {
+    __kidsAfterSchoolLastPageView?: {
+      key: string;
+      recordedAt: number;
+    };
+  }
+}
 
 function getCookieValue(name: string) {
   const cookies = document.cookie ? document.cookie.split('; ') : [];
@@ -33,20 +43,52 @@ function generateSessionId() {
   return Math.random().toString(36).slice(2) + Date.now().toString(36);
 }
 
+function shouldRecordPageView(key: string) {
+  const lastPageView = window.__kidsAfterSchoolLastPageView;
+  const now = Date.now();
+
+  if (
+    lastPageView &&
+    lastPageView.key === key &&
+    now - lastPageView.recordedAt < PAGE_VIEW_DEDUP_WINDOW_MS
+  ) {
+    return false;
+  }
+
+  window.__kidsAfterSchoolLastPageView = {
+    key,
+    recordedAt: now,
+  };
+
+  return true;
+}
+
 async function recordPageView(sessionId: string, path: string, hash: string) {
   try {
-    await fetch('/api/track/page-view', {
+    const response = await fetch('/api/track/page-view', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'same-origin',
+      cache: 'no-store',
+      keepalive: true,
       body: JSON.stringify({
         sessionId,
         path,
         hash: hash || null,
       }),
     });
-  } catch {
-    // Swallow analytics errors; they should not block the user experience.
+
+    if (!response.ok) {
+      const result = (await response.json().catch(() => null)) as
+        | { error?: string }
+        | null;
+      console.error(
+        '[Analytics] Failed to record page view:',
+        result?.error || response.status
+      );
+    }
+  } catch (error) {
+    console.error('[Analytics] Error recording page view:', error);
   }
 }
 
@@ -64,6 +106,8 @@ export default function AnalyticsTracker() {
     const recordCurrent = () => {
       const path = window.location.pathname || '/';
       const hash = window.location.hash || '';
+      const pageKey = `${path}${hash}`;
+      if (!shouldRecordPageView(pageKey)) return;
       void recordPageView(sessionId, path, hash);
     };
 
@@ -77,4 +121,3 @@ export default function AnalyticsTracker() {
 
   return null;
 }
-

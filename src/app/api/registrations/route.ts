@@ -5,7 +5,7 @@ import {
   type RegistrationFieldErrors,
   validateRegistrationPayload,
 } from '@/lib/registration';
-import { connectToDatabase } from '@/lib/mongodb';
+import { connectToDatabase, getMongoErrorMessage } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
 
 export const runtime = 'nodejs';
@@ -86,32 +86,13 @@ export async function POST(request: Request) {
       );
     }
 
-    if (
-      error instanceof Error &&
-      error.message.includes('MONGODB_URI is not defined')
-    ) {
-      return NextResponse.json(
-        { error: 'MongoDB is not configured on the server.' },
-        { status: 500 }
-      );
-    }
-
-    if (
-      error instanceof Error &&
-      (error.message.includes('querySrv ECONNREFUSED') ||
-        error.message.includes('_mongodb._tcp'))
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            'MongoDB DNS SRV lookup failed on this machine. Use a non-SRV mongodb:// URI with host1,host2,host3 in MONGODB_URI.',
-        },
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      { error: 'Could not save the registration right now.' },
+      {
+        error: getMongoErrorMessage(
+          error,
+          'Could not save the registration right now.'
+        ),
+      },
       { status: 500 }
     );
   }

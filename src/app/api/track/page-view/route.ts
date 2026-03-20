@@ -1,6 +1,5 @@
-import mongoose from 'mongoose';
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import { connectToDatabase, getMongoErrorMessage } from '@/lib/mongodb';
 import PageView from '@/lib/models/PageView';
 import Visit from '@/lib/models/Visit';
 
@@ -61,7 +60,7 @@ export async function POST(request: Request) {
     await Visit.updateOne(
       { sessionId },
       {
-        $setOnInsert: { sessionId, device },
+        $setOnInsert: { sessionId },
         $set: { device },
       },
       { upsert: true }
@@ -76,14 +75,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    if (error instanceof mongoose.Error) {
-      return NextResponse.json({ error: 'Database error.' }, { status: 500 });
-    }
     console.error('Track page-view failed:', error);
     return NextResponse.json(
-      { error: 'Could not record page view.' },
+      {
+        error: getMongoErrorMessage(error, 'Could not record page view.'),
+      },
       { status: 500 }
     );
   }
 }
-

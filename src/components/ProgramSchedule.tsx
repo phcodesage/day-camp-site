@@ -2,29 +2,35 @@ import { getCmsSectionContent } from '@/lib/cms/cms';
 
 export const dynamic = 'force-dynamic';
 
+const BADGE_STYLES = [
+  'bg-[#c74444] text-white',
+  'bg-[#f19ac6] text-[#1a2945]',
+  'bg-[#76b9d4] text-[#0e243a]',
+  'bg-[#c74444] text-white',
+  'bg-[#f5a347] text-[#0e243a]',
+] as const;
+
 export default async function ProgramSchedule() {
   const content = await getCmsSectionContent('programSchedule');
   const videoUrl = content.videoUrl?.trim();
+  const badgeLabels = content.badgeLabels.length
+    ? content.badgeLabels
+    : ['Programs'];
 
   return (
     <section id="schedule" className="w-full bg-[#0e243a] text-white px-6 md:px-10 lg:px-16 py-16 md:py-24 scroll-mt-24">
       <div className="max-w-5xl mx-auto grid gap-10 md:gap-14">
         <div className="grid gap-4 max-w-xl w-full mx-auto">
-          <div className="rounded-full bg-[#c74444] text-center font-extrabold tracking-wide py-4 px-6 text-lg md:text-xl">
-            {content.badgeLabels[0]}
-          </div>
-          <div className="rounded-full bg-[#f19ac6] text-center font-extrabold tracking-wide py-4 px-6 text-lg md:text-xl text-[#1a2945]">
-            {content.badgeLabels[1]}
-          </div>
-          <div className="rounded-full bg-[#76b9d4] text-center font-extrabold tracking-wide py-4 px-6 text-lg md:text-xl text-[#0e243a]">
-            {content.badgeLabels[2]}
-          </div>
-          <div className="rounded-full bg-[#c74444] text-center font-extrabold tracking-wide py-4 px-6 text-lg md:text-xl">
-            {content.badgeLabels[3]}
-          </div>
-          <div className="rounded-full bg-[#f5a347] text-center font-extrabold tracking-wide py-4 px-6 text-lg md:text-xl text-[#0e243a]">
-            {content.badgeLabels[4]}
-          </div>
+          {badgeLabels.map((label, index) => (
+            <div
+              key={`${label}-${index}`}
+              className={`rounded-full px-6 py-4 text-center text-lg font-extrabold tracking-wide md:text-xl ${
+                BADGE_STYLES[index % BADGE_STYLES.length]
+              }`}
+            >
+              {label}
+            </div>
+          ))}
         </div>
 
         <div className="text-center space-y-2">

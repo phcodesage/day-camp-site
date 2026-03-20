@@ -1,6 +1,6 @@
 import AdminAnalyticsPage from './analytics/page';
 import AdminRegistrationsPage from './registrations/page';
-import AdminCmsEditor from '@/components/admin/AdminCmsEditor';
+import AdminCmsEditorAllSections from '@/components/admin/AdminCmsEditorAllSections';
 
 export default function AdminHomePage() {
   return (
@@ -19,10 +19,9 @@ export default function AdminHomePage() {
         </section>
 
         <section>
-          <AdminCmsEditor />
+          <AdminCmsEditorAllSections />
         </section>
       </div>
     </div>
   );
 }
-

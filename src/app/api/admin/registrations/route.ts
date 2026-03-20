@@ -1,6 +1,5 @@
-import mongoose from 'mongoose';
 import { NextResponse } from 'next/server';
-import { connectToDatabase } from '@/lib/mongodb';
+import { connectToDatabase, getMongoErrorMessage } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
 import { requireAdminOrJsonResponse } from '@/lib/admin/requireAdmin';
 
@@ -40,15 +39,12 @@ export async function GET(request: Request) {
       })),
     });
   } catch (error) {
-    if (error instanceof mongoose.Error) {
-      return NextResponse.json({ error: 'Database error.' }, { status: 500 });
-    }
-
     console.error('Admin registrations fetch failed:', error);
     return NextResponse.json(
-      { error: 'Could not load registrations.' },
+      {
+        error: getMongoErrorMessage(error, 'Could not load registrations.'),
+      },
       { status: 500 }
     );
   }
 }
-
