@@ -1,5 +1,6 @@
 'use client';
 
+import { ShieldCheck } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -22,6 +23,7 @@ export default function AdminAuthGuard({
         const res = await fetch('/api/admin/me', {
           method: 'GET',
           credentials: 'same-origin',
+          cache: 'no-store',
         });
 
         if (!res.ok) {
@@ -54,14 +56,24 @@ export default function AdminAuthGuard({
     }
 
     if (!isAuthenticated && !isLoginPage) {
-      router.replace('/admin/login');
+      router.replace('/admin/login?reason=auth');
     }
   }, [isAuthenticated, isChecking, pathname, router]);
 
   if (isChecking) {
     return (
-      <div className="flex min-h-screen w-full items-center justify-center p-8">
-        <p className="text-[#1a2945]">Loading admin...</p>
+      <div className="flex min-h-screen w-full items-center justify-center bg-[#f5e6e0] p-8">
+        <div className="rounded-3xl border border-black/5 bg-white/80 px-8 py-7 text-center shadow-xl backdrop-blur">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#1a2945] text-white">
+            <ShieldCheck className="h-6 w-6" />
+          </div>
+          <p className="mt-4 text-lg font-bold text-[#1a2945]">
+            Checking admin access
+          </p>
+          <p className="mt-2 text-sm text-[#1a2945]/68">
+            Verifying your session before opening the dashboard.
+          </p>
+        </div>
       </div>
     );
   }
@@ -73,4 +85,3 @@ export default function AdminAuthGuard({
 
   return <>{children}</>;
 }
-

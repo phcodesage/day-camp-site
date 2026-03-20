@@ -10,21 +10,33 @@ export async function POST(request: Request) {
     body = await request.json();
   } catch {
     return NextResponse.json(
-      { error: 'Invalid request body. Expected JSON.' },
-      { status: 400 }
+      { error: 'Could not read the sign-in request.' },
+      {
+        status: 400,
+        headers: { 'Cache-Control': 'no-store' },
+      }
     );
   }
 
   if (!body || typeof body !== 'object') {
-    return NextResponse.json({ error: 'Invalid request payload.' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Enter both username and password.' },
+      {
+        status: 400,
+        headers: { 'Cache-Control': 'no-store' },
+      }
+    );
   }
 
   const { username, password } = body as Record<string, unknown>;
 
   if (typeof username !== 'string' || typeof password !== 'string') {
     return NextResponse.json(
-      { error: 'Username and password are required.' },
-      { status: 400 }
+      { error: 'Enter both username and password.' },
+      {
+        status: 400,
+        headers: { 'Cache-Control': 'no-store' },
+      }
     );
   }
 
@@ -32,19 +44,31 @@ export async function POST(request: Request) {
   const expectedPassword = process.env.ADMIN_PASSWORD;
   if (!expectedUsername || !expectedPassword) {
     return NextResponse.json(
-      { error: 'Admin credentials are not configured.' },
-      { status: 500 }
+      { error: 'Admin credentials are not configured on the server.' },
+      {
+        status: 500,
+        headers: { 'Cache-Control': 'no-store' },
+      }
     );
   }
 
-  if (username !== expectedUsername || password !== expectedPassword) {
-    return NextResponse.json({ error: 'Invalid credentials.' }, { status: 401 });
+  if (username.trim() !== expectedUsername || password !== expectedPassword) {
+    return NextResponse.json(
+      { error: 'Incorrect username or password.' },
+      {
+        status: 401,
+        headers: { 'Cache-Control': 'no-store' },
+      }
+    );
   }
 
   const cookieName = getAdminSessionCookieName();
-  const cookieValue = createAdminSessionCookieValue(username);
+  const cookieValue = createAdminSessionCookieValue(username.trim());
 
-  const response = NextResponse.json({ ok: true });
+  const response = NextResponse.json(
+    { ok: true },
+    { headers: { 'Cache-Control': 'no-store' } }
+  );
   response.cookies.set(cookieName, cookieValue, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -56,4 +80,3 @@ export async function POST(request: Request) {
 
   return response;
 }
-

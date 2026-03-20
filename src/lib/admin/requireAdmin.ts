@@ -19,10 +19,12 @@ export function requireAdminOrJsonResponse() {
   if (!session) {
     return NextResponse.json(
       { error: 'Unauthorized' },
-      { status: 401 }
+      {
+        status: 401,
+        headers: { 'Cache-Control': 'no-store' },
+      }
     );
   }
 
   return session;
 }
-

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 
 const NAV = [
@@ -19,8 +19,8 @@ const NAV = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
 
   const isActive = (href: string) => {
     if (href === '/admin/analytics') return pathname === '/admin' || pathname.startsWith(href);
@@ -30,14 +30,28 @@ export default function AdminSidebar() {
   const handleLogout = async () => {
     if (isLoggingOut) return;
     setIsLoggingOut(true);
+    setLogoutError(null);
 
     try {
-      await fetch('/api/admin/logout', {
+      const response = await fetch('/api/admin/logout', {
         method: 'POST',
         credentials: 'same-origin',
+        cache: 'no-store',
       });
-      router.push('/admin/login');
-    } catch {
+
+      const payload = (await response.json().catch(() => null)) as
+        | { error?: string }
+        | null;
+
+      if (!response.ok) {
+        throw new Error(payload?.error || 'Could not log out right now.');
+      }
+
+      window.location.assign('/admin/login?loggedOut=1');
+    } catch (error) {
+      setLogoutError(
+        error instanceof Error ? error.message : 'Could not log out right now.'
+      );
       setIsLoggingOut(false);
     }
   };
@@ -124,13 +138,29 @@ export default function AdminSidebar() {
         </div>
       </div>
 
-      <div className="border-t border-black/5 p-6">
+      <div className="border-t border-black/5 bg-white/40 p-6">
+        <div className="mb-4 rounded-2xl border border-[#1a2945]/10 bg-white/80 p-4">
+          <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-[#1a2945]/55">
+            Secure Session
+          </p>
+          <p className="mt-2 text-sm text-[#1a2945]/80">
+            Sign out when you finish. This workspace controls live CMS content,
+            registration data, and analytics.
+          </p>
+        </div>
+
+        {logoutError ? (
+          <div className="mb-4 rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 px-4 py-3 text-sm text-[#7a1f1f]">
+            {logoutError}
+          </div>
+        ) : null}
+
         <button
           onClick={handleLogout}
           disabled={isLoggingOut}
-          className="w-full rounded-2xl bg-white/0 px-4 py-3 text-sm font-semibold text-[#1a2945] transition-colors hover:bg-[#f5e6e0]/70 disabled:opacity-50"
+          className="w-full rounded-2xl bg-[#1a2945] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#111c31] disabled:opacity-50"
         >
-          {isLoggingOut ? 'Logging out...' : 'Logout'}
+          {isLoggingOut ? 'Ending session...' : 'Logout'}
         </button>
       </div>
     </aside>

@@ -3,15 +3,18 @@ import { getAdminSessionCookieName } from '@/lib/admin/session';
 
 export async function POST() {
   const cookieName = getAdminSessionCookieName();
-  const response = NextResponse.json({ ok: true });
+  const response = NextResponse.json(
+    { ok: true },
+    { headers: { 'Cache-Control': 'no-store' } }
+  );
   response.cookies.set(cookieName, '', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
     maxAge: 0,
+    expires: new Date(0),
   });
 
   return response;
 }
-
