@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import AnalyticsTracker from '@/components/AnalyticsTracker';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -20,7 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-[#f5e6e0] text-[#1a2945] antialiased">{children}</body>
+      <body className="bg-[#f5e6e0] text-[#1a2945] antialiased">
+        {children}
+        <AnalyticsTracker />
+      </body>
     </html>
   );
 }

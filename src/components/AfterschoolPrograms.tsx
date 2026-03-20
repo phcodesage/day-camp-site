@@ -17,6 +17,8 @@ import {
   type RegistrationFieldErrors,
   type RegistrationPayload,
 } from '@/lib/registration';
+import { DEFAULT_CMS_CONTENT } from '@/lib/cms/defaultContent';
+import type { AfterschoolProgramsContent } from '@/lib/cms/types';
 
 type SubmissionState =
   | null
@@ -55,7 +57,11 @@ function getInputClassName(hasError: boolean) {
   }`;
 }
 
-export default function AfterschoolPrograms() {
+export default function AfterschoolPrograms({
+  cms,
+}: Readonly<{ cms?: AfterschoolProgramsContent }>) {
+  const content = cms ?? DEFAULT_CMS_CONTENT.afterschoolPrograms;
+
   const [formData, setFormData] = useState<RegistrationPayload>(
     createInitialFormState
   );
@@ -271,9 +277,9 @@ export default function AfterschoolPrograms() {
       <div className="mx-auto max-w-6xl space-y-12">
         <div className="space-y-4 text-center">
           <h2 className="text-4xl font-extrabold text-[#c74444] md:text-5xl">
-            Kids Afterschool Programs
+            {content.heroTitle}
           </h2>
-          <p className="text-lg font-semibold">Monday to Friday</p>
+          <p className="text-lg font-semibold">{content.heroSubtitle}</p>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
@@ -294,11 +300,10 @@ export default function AfterschoolPrograms() {
         <div className="rounded-2xl bg-[#f6dedd] p-8 shadow-lg md:p-10">
           <div className="mb-8 text-center">
             <h3 className="text-3xl font-bold text-[#c74444]">
-              Registration Form
+              {content.registrationTitle}
             </h3>
             <p className="mt-3 text-sm text-[#1a2945]/75">
-              Fill up the form below to register and we will contact you to
-              settle your payment.
+              {content.registrationDescription}
             </p>
           </div>
 
@@ -579,34 +584,27 @@ export default function AfterschoolPrograms() {
         </div>
 
         <div className="rounded-2xl bg-[#0e243a] p-8 text-white shadow-xl md:p-10">
-          <h3 className="mb-8 text-center text-3xl font-bold">Pricing</h3>
+          <h3 className="mb-8 text-center text-3xl font-bold">
+            {content.pricingTitle}
+          </h3>
 
           <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-            <div className="space-y-2 rounded-xl bg-white/10 p-6 text-center transition-colors hover:bg-white/20">
-              <p className="text-lg font-semibold">1 day/week</p>
-              <p className="text-3xl font-bold text-[#f5a347]">$75</p>
-            </div>
-            <div className="space-y-2 rounded-xl bg-white/10 p-6 text-center transition-colors hover:bg-white/20">
-              <p className="text-lg font-semibold">2 days/week</p>
-              <p className="text-3xl font-bold text-[#f5a347]">$150</p>
-            </div>
-            <div className="space-y-2 rounded-xl bg-white/10 p-6 text-center transition-colors hover:bg-white/20">
-              <p className="text-lg font-semibold">3 days/week</p>
-              <p className="text-3xl font-bold text-[#f5a347]">$225</p>
-            </div>
-            <div className="space-y-2 rounded-xl bg-white/10 p-6 text-center transition-colors hover:bg-white/20">
-              <p className="text-lg font-semibold">4 days/week</p>
-              <p className="text-3xl font-bold text-[#f5a347]">$300</p>
-            </div>
-            <div className="space-y-2 rounded-xl bg-white/10 p-6 text-center transition-colors hover:bg-white/20">
-              <p className="text-lg font-semibold">5 days/week</p>
-              <p className="text-3xl font-bold text-[#f5a347]">$375</p>
-            </div>
+            {content.pricingItems.map((item) => (
+              <div
+                key={item.durationLabel}
+                className="space-y-2 rounded-xl bg-white/10 p-6 text-center transition-colors hover:bg-white/20"
+              >
+                <p className="text-lg font-semibold">{item.durationLabel}</p>
+                <p className="text-3xl font-bold text-[#f5a347]">
+                  {item.price}
+                </p>
+              </div>
+            ))}
           </div>
 
           <div className="rounded-xl bg-[#c74444] p-6 text-center">
             <p className="text-2xl font-extrabold md:text-3xl">
-              Get 40% OFF for 2 or more days of afterschool programs!
+              {content.discountNotice}
             </p>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import AboutSection from './components/AboutSection';
-import AfterschoolPrograms from './components/AfterschoolPrograms';
+import AfterschoolProgramsSection from './components/AfterschoolProgramsSection';
 import CampHighlights from './components/CampHighlights';
 import MoreInformation from './components/MoreInformation';
 import NavBar from './components/NavBar';
@@ -83,7 +83,7 @@ function App() {
         <MoreInformation />
         <CampHighlights />
         <ProgramSchedule />
-        <AfterschoolPrograms />
+        <AfterschoolProgramsSection />
       </main>
     </div>
   );

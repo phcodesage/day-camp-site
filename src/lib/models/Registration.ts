@@ -66,15 +66,8 @@ const registrationSchema = new Schema<IRegistration>(
   }
 );
 
-let Registration: Model<IRegistration>;
-
-try {
-  Registration = mongoose.model<IRegistration>('Registration');
-} catch {
-  Registration = mongoose.model<IRegistration>(
-    'Registration',
-    registrationSchema
-  );
-}
+const Registration: Model<IRegistration> =
+  mongoose.models.Registration ||
+  mongoose.model<IRegistration>('Registration', registrationSchema);
 
 export default Registration;
