@@ -1,7 +1,8 @@
 'use client';
 
 import { AlertCircle, CheckCircle2 } from 'lucide-react';
-import { type ChangeEvent, type FocusEvent, type FormEvent, useState } from 'react';
+import confetti from 'canvas-confetti';
+import { type ChangeEvent, type FocusEvent, type FormEvent, useEffect, useState } from 'react';
 import {
   MAX_NAME_LENGTH,
   MAX_NOTES_LENGTH,
@@ -44,6 +45,7 @@ function createInitialFormState(): RegistrationPayload {
     phone: '',
     activities: [],
     preferredDays: '',
+    startDate: '',
     notes: '',
   };
 }
@@ -77,6 +79,43 @@ export default function AfterschoolPrograms({
     formData.preferredDays,
     content.preferredDayOptions
   );
+
+  // Trigger confetti when success modal appears
+  useEffect(() => {
+    if (submissionState?.kind === 'success') {
+      // Multiple bursts for celebration effect
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+      const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+      // First burst from left
+      setTimeout(() => {
+        confetti({
+          ...defaults,
+          particleCount: 50,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        });
+      }, 0);
+
+      // Second burst from right
+      setTimeout(() => {
+        confetti({
+          ...defaults,
+          particleCount: 50,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        });
+      }, 200);
+
+      // Third burst from center
+      setTimeout(() => {
+        confetti({
+          ...defaults,
+          particleCount: 80,
+          origin: { x: 0.5, y: 0.5 },
+          colors: ['#c74444', '#1a7b8e', '#f5a347', '#f6dedd'],
+        });
+      }, 400);
+    }
+  }, [submissionState]);
 
   const applySingleFieldValidation = (
     field: RegistrationField,
@@ -195,6 +234,10 @@ export default function AfterschoolPrograms({
     applySingleFieldValidation('preferredDays', formData);
   };
 
+  const handleCloseModal = () => {
+    setSubmissionState(null);
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -212,6 +255,7 @@ export default function AfterschoolPrograms({
         phone: true,
         activities: true,
         preferredDays: true,
+        startDate: true,
         notes: true,
       });
       setSubmissionState({
@@ -249,6 +293,7 @@ export default function AfterschoolPrograms({
             phone: true,
             activities: true,
             preferredDays: true,
+            startDate: true,
             notes: true,
           }));
         }
@@ -322,24 +367,43 @@ export default function AfterschoolPrograms({
             </p>
           </div>
 
-          {submissionState ? (
+          {submissionState?.kind === 'error' ? (
             <div
-              className={`mb-6 flex items-start gap-3 rounded-2xl border px-4 py-4 ${
-                submissionState.kind === 'success'
-                  ? 'border-[#1a7b8e]/25 bg-[#1a7b8e]/10 text-[#0e243a]'
-                  : 'border-[#c74444]/20 bg-[#c74444]/10 text-[#7a1f1f]'
-              }`}
-              role={submissionState.kind === 'success' ? 'status' : 'alert'}
+              className="mb-6 flex items-start gap-3 rounded-2xl border border-[#c74444]/20 bg-[#c74444]/10 px-4 py-4 text-[#7a1f1f]"
+              role="alert"
             >
-              {submissionState.kind === 'success' ? (
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
-              ) : (
-                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-              )}
-
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
               <div>
                 <p className="font-semibold">{submissionState.title}</p>
                 <p className="mt-1 text-sm">{submissionState.message}</p>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Thank You Modal */}
+          {submissionState?.kind === 'success' ? (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-2xl">
+                <div className="mb-6 flex items-center justify-center">
+                  <div className="rounded-full bg-[#1a7b8e]/10 p-4">
+                    <CheckCircle2 className="h-12 w-12 text-[#1a7b8e]" />
+                  </div>
+                </div>
+                <h3 className="mb-2 text-center text-2xl font-bold text-[#1a2945]">
+                  {content.submissionMessages.successTitle}
+                </h3>
+                <p className="mb-6 text-center text-[#1a2945]/75">
+                  {submissionState.message}
+                </p>
+                <p className="mb-6 text-center text-sm text-[#1a2945]/60">
+                  A confirmation email has been sent to {formData.email || 'your email'}.
+                </p>
+                <button
+                  onClick={handleCloseModal}
+                  className="w-full rounded-xl bg-[#c74444] px-8 py-3 font-semibold text-white transition-colors hover:bg-[#a63535]"
+                >
+                  Close
+                </button>
               </div>
             </div>
           ) : null}
@@ -557,6 +621,27 @@ export default function AfterschoolPrograms({
                 {touchedFields.preferredDays ? fieldErrors.preferredDays : ''}
               </p>
             </div>
+
+            <label className="flex flex-col gap-2 md:col-span-2">
+              <span className="font-semibold">
+                {content.startDateLabel} <span className="text-[#c74444]">*</span>
+              </span>
+              <input
+                id="startDate"
+                name="startDate"
+                type="date"
+                value={formData.startDate}
+                onChange={handleFieldChange}
+                onBlur={handleFieldBlur}
+                className={getInputClassName(Boolean(fieldErrors.startDate))}
+                aria-invalid={Boolean(fieldErrors.startDate)}
+                aria-describedby={fieldErrors.startDate ? 'startDate-error' : undefined}
+                required
+              />
+              <span id="startDate-error" className="text-xs text-[#c74444]">
+                {touchedFields.startDate ? fieldErrors.startDate : ''}
+              </span>
+            </label>
 
             <label className="flex flex-col gap-2 md:col-span-2">
               <span className="font-semibold">{content.notesLabel}</span>

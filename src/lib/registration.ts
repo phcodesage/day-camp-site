@@ -28,6 +28,7 @@ export type RegistrationPayload = {
   phone: string;
   activities: ActivityOption[];
   preferredDays: string;
+  startDate: string;
   notes: string;
 };
 
@@ -61,6 +62,7 @@ export const DEFAULT_PREFERRED_DAYS = PREFERRED_DAY_OPTIONS.join(', ');
 export const MAX_NAME_LENGTH = 120;
 export const MAX_PREFERRED_DAYS_LENGTH = 80;
 export const MAX_NOTES_LENGTH = 1000;
+export const MAX_START_DATE_LENGTH = 20;
 const DEFAULT_VALIDATION_MESSAGES =
   DEFAULT_CMS_CONTENT.afterschoolPrograms.validationMessages;
 
@@ -141,6 +143,7 @@ export function normalizeRegistrationPayload(
     preferredDays: formatPreferredDays(
       getPreferredDaySelections(payload.preferredDays, preferredDayOptions)
     ),
+    startDate: getTrimmedString(payload.startDate),
     notes: getTrimmedString(payload.notes),
     activities: normalizeOptionSelections(payload.activities, activityOptions),
   };
@@ -191,6 +194,10 @@ export function getRegistrationFieldErrors(
     data.preferredDays.length > MAX_PREFERRED_DAYS_LENGTH
   ) {
     errors.preferredDays = messages.preferredDaysTooLong;
+  }
+
+  if (!data.startDate) {
+    errors.startDate = messages.startDateRequired;
   }
 
   if (data.notes.length > MAX_NOTES_LENGTH) {

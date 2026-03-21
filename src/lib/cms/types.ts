@@ -98,6 +98,7 @@ export type RegistrationValidationMessages = {
   activitiesRequired: string;
   preferredDaysRequired: string;
   preferredDaysTooLong: string;
+  startDateRequired: string;
   notesTooLong: string;
 };
 
@@ -122,6 +123,8 @@ export type AfterschoolProgramsContent = {
   preferredDaysLabel: string;
   preferredDayOptions: string[];
   selectedCountSuffix: string;
+  startDateLabel: string;
+  startDatePlaceholder: string;
   notesLabel: string;
   notesPlaceholder: string;
   submitButtonLabel: string;

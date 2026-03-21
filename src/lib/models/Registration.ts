@@ -7,6 +7,7 @@ export interface IRegistration extends Document {
   phone: string;
   activities: string[];
   preferredDays: string;
+  startDate: string;
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -50,6 +51,12 @@ const registrationSchema = new Schema<IRegistration>(
       type: String,
       required: [true, 'Select at least one preferred day'],
       maxlength: [80, 'Preferred days must not exceed 80 characters'],
+      trim: true,
+    },
+    startDate: {
+      type: String,
+      required: [true, 'Desired start date is required'],
+      maxlength: [20, 'Start date must not exceed 20 characters'],
       trim: true,
     },
     notes: {

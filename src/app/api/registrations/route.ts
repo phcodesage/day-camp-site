@@ -9,6 +9,7 @@ import { getCmsSectionContent } from '@/lib/cms/cms';
 import type { RegistrationValidationMessages } from '@/lib/cms/types';
 import { connectToDatabase } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
+import { sendRegistrationConfirmationEmail, type RegistrationEmailData } from '@/lib/email';
 
 export const runtime = 'nodejs';
 
@@ -40,6 +41,8 @@ function getMongooseFieldMessage(
       return kind === 'maxlength'
         ? messages.preferredDaysTooLong
         : messages.preferredDaysRequired;
+    case 'startDate':
+      return messages.startDateRequired;
     case 'notes':
       return messages.notesTooLong;
     default:
@@ -108,10 +111,29 @@ export async function POST(request: Request) {
       phone: data.phone,
       activities: data.activities,
       preferredDays: data.preferredDays,
+      startDate: data.startDate,
       notes: data.notes || undefined,
     });
 
     await registration.save();
+
+    // Send confirmation email
+    try {
+      const emailData: RegistrationEmailData = {
+        parentName: data.parentName,
+        studentName: data.studentName,
+        email: data.email,
+        phone: data.phone,
+        activities: data.activities,
+        preferredDays: data.preferredDays,
+        startDate: data.startDate,
+        notes: data.notes || undefined,
+      };
+      await sendRegistrationConfirmationEmail(emailData);
+    } catch (emailError) {
+      // Log email error but don't fail the registration
+      console.error('Failed to send confirmation email:', emailError);
+    }
 
     return NextResponse.json(
       {

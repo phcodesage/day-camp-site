@@ -118,6 +118,8 @@ export const DEFAULT_CMS_CONTENT: CmsContentBySectionKey = {
       'Friday',
     ],
     selectedCountSuffix: 'selected',
+    startDateLabel: 'Desired Start Date',
+    startDatePlaceholder: 'Select desired start date',
     notesLabel: 'Notes',
     notesPlaceholder:
       'Share allergies, pickup details, or anything else we should know',
@@ -146,6 +148,7 @@ export const DEFAULT_CMS_CONTENT: CmsContentBySectionKey = {
       activitiesRequired: 'Select at least one activity.',
       preferredDaysRequired: 'Select at least one preferred day.',
       preferredDaysTooLong: 'Preferred days must be 80 characters or less.',
+      startDateRequired: 'Desired start date is required.',
       notesTooLong: 'Notes must be 1000 characters or less.',
     },
     pricingTitle: 'Pricing',
