@@ -59,7 +59,7 @@ function CmsField({
 }>) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="text-sm font-semibold text-[#1a2945]/70">{label}</span>
+      <span className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">{label}</span>
       {multiline ? (
         <textarea
           value={value}
@@ -87,14 +87,14 @@ function CmsSectionCard({
   children: React.ReactNode;
 }>) {
   return (
-    <section className="rounded-2xl border border-black/5 bg-white/60 p-6 shadow">
+    <section className="rounded-2xl border border-black/5 bg-white/60 p-4 shadow md:p-6">
       <div>
-        <h2 className="text-lg font-extrabold text-[#1a2945]">{title}</h2>
+        <h2 className="text-base font-extrabold text-[#1a2945] md:text-lg">{title}</h2>
         {description ? (
-          <p className="mt-1 text-sm text-[#1a2945]/65">{description}</p>
+          <p className="mt-1 text-xs text-[#1a2945]/65 md:text-sm">{description}</p>
         ) : null}
       </div>
-      <div className="mt-5 space-y-5">{children}</div>
+      <div className="mt-4 space-y-4 md:mt-5 md:space-y-5">{children}</div>
     </section>
   );
 }
@@ -125,10 +125,10 @@ function CmsMediaPicker({
   const mediaMode = videoUrl.trim() ? 'video' : 'image';
 
   return (
-    <div className="rounded-2xl border border-black/5 bg-white p-4">
+    <div className="rounded-2xl border border-black/5 bg-white p-3 md:p-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <p className="text-sm font-semibold text-[#1a2945]/70">{title}</p>
+          <p className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">{title}</p>
           <p className="mt-1 text-xs text-[#1a2945]/55">
             Pick files from the media library. Video replaces the image on the
             live site.
@@ -137,7 +137,7 @@ function CmsMediaPicker({
 
         <Link
           href="/admin/cms/media"
-          className="inline-flex items-center justify-center rounded-xl border border-[#1a2945]/15 bg-[#f5e6e0] px-3 py-2 text-sm font-semibold text-[#1a2945] transition-colors hover:bg-[#ead5cd]"
+          className="inline-flex items-center justify-center rounded-xl border border-[#1a2945]/15 bg-[#f5e6e0] px-3 py-2 text-xs font-semibold text-[#1a2945] transition-colors hover:bg-[#ead5cd] md:text-sm"
         >
           Manage Media
         </Link>
@@ -170,10 +170,10 @@ function CmsMediaPicker({
         </button>
       </div>
 
-      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="mt-4 flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_280px] xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="space-y-4">
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-semibold text-[#1a2945]/70">
+            <span className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">
               Image File
             </span>
             <select
@@ -191,7 +191,7 @@ function CmsMediaPicker({
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-semibold text-[#1a2945]/70">
+            <span className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">
               Video File
             </span>
             <select
@@ -215,7 +215,7 @@ function CmsMediaPicker({
           />
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-black/5 bg-[#f8f4f2]">
+        <div className="overflow-hidden rounded-2xl border border-black/5 bg-[#f8f4f2] min-h-[200px]">
           {mediaMode === 'video' && videoUrl ? (
             <video
               src={videoUrl}
@@ -230,7 +230,7 @@ function CmsMediaPicker({
             />
           ) : (
             <div
-              className={`flex items-center justify-center px-6 text-center text-sm text-[#1a2945]/55 ${previewClassName}`}
+              className={`flex items-center justify-center px-4 text-center text-xs text-[#1a2945]/55 md:px-6 md:text-sm ${previewClassName}`}
             >
               No media selected yet.
             </div>
@@ -261,12 +261,12 @@ function CmsImageSelect({
   const imageItems = mediaItems.filter((item) => item.kind === 'image');
 
   return (
-    <div className="rounded-2xl border border-black/5 bg-white p-4">
-      <p className="text-sm font-semibold text-[#1a2945]/70">{title}</p>
-      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_260px]">
+    <div className="rounded-2xl border border-black/5 bg-white p-3 md:p-4">
+      <p className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">{title}</p>
+      <div className="mt-4 flex flex-col gap-4 lg:grid lg:grid-cols-[minmax(0,1fr)_240px] xl:grid-cols-[minmax(0,1fr)_260px]">
         <div className="space-y-4">
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-semibold text-[#1a2945]/70">
+            <span className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">
               Image File
             </span>
             <select
@@ -290,7 +290,7 @@ function CmsImageSelect({
           />
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-black/5 bg-[#f8f4f2]">
+        <div className="overflow-hidden rounded-2xl border border-black/5 bg-[#f8f4f2] min-h-[200px]">
           {imageSrc ? (
             <img
               src={imageSrc}
@@ -299,7 +299,7 @@ function CmsImageSelect({
             />
           ) : (
             <div
-              className={`flex items-center justify-center px-6 text-center text-sm text-[#1a2945]/55 ${previewClassName}`}
+              className={`flex items-center justify-center px-4 text-center text-xs text-[#1a2945]/55 md:px-6 md:text-sm ${previewClassName}`}
             >
               No image selected yet.
             </div>
@@ -319,6 +319,7 @@ export default function AdminCmsEditorAllSections() {
   const [isRefreshingMedia, setIsRefreshingMedia] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const hasUnsavedChanges = Boolean(
     sections &&
@@ -405,6 +406,15 @@ export default function AdminCmsEditorAllSections() {
     };
   }, []);
 
+  useEffect(() => {
+    function handleScroll() {
+      setShowBackToTop(window.scrollY > 400);
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   function updateDraft<K extends CmsSectionKey>(
     key: K,
     patch: Partial<CmsContentBySectionKey[K]>
@@ -474,12 +484,16 @@ export default function AdminCmsEditorAllSections() {
     }
   }
 
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   if (isLoading || !drafts) {
     return (
-      <div className="px-6 pt-36">
-        <div className="fixed left-72 right-0 top-0 z-30 border-b border-black/5 bg-[#f5e6e0]/95 backdrop-blur">
-          <div className="mx-auto w-full max-w-6xl px-6 py-4">
-            <h1 className="text-2xl font-extrabold text-[#1a2945]">
+      <div className="px-4 pt-[100px] md:px-6 md:pt-36">
+        <div className="fixed left-0 right-0 top-[57px] z-30 border-b border-black/5 bg-[#f5e6e0]/95 backdrop-blur md:left-72 md:top-0">
+          <div className="mx-auto w-full max-w-6xl px-4 py-4 md:px-6">
+            <h1 className="text-xl font-extrabold text-[#1a2945] md:text-2xl">
               CMS Editor
             </h1>
             <p className="mt-1 text-sm text-[#1a2945]/70">
@@ -500,35 +514,35 @@ export default function AdminCmsEditorAllSections() {
     drafts.afterschoolPrograms as AfterschoolProgramsContent;
 
   return (
-    <div className="px-6 pt-40">
-      <div className="fixed left-72 right-0 top-0 z-30 border-b border-black/5 bg-[#f5e6e0]/95 backdrop-blur">
-        <div className="mx-auto w-full max-w-6xl px-6 py-4">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="px-4 pt-[120px] md:px-6 md:pt-40">
+      <div className="fixed left-0 right-0 top-[57px] z-30 border-b border-black/5 bg-[#f5e6e0]/95 backdrop-blur md:left-72 md:top-0">
+        <div className="mx-auto w-full max-w-6xl px-4 py-3 md:px-6 md:py-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
             <div>
-              <h1 className="text-2xl font-extrabold text-[#1a2945]">
+              <h1 className="text-xl font-extrabold text-[#1a2945] md:text-2xl">
                 CMS Editor
               </h1>
-              <p className="mt-1 text-sm text-[#1a2945]/70">
+              <p className="mt-1 text-xs text-[#1a2945]/70 md:text-sm">
                 Edit all sections here, then save once. {mediaItems.length}{' '}
                 media file{mediaItems.length === 1 ? '' : 's'} available.
               </p>
-              <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-[#1a2945]/55">
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-[#1a2945]/55 md:mt-2">
                 {hasUnsavedChanges ? 'Unsaved changes' : 'All changes saved'}
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2 md:gap-3">
               <Link
                 href="/"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center rounded-xl border border-[#1a2945]/15 bg-white px-4 py-2 text-sm font-semibold text-[#1a2945] transition-colors hover:bg-white/80"
+                className="inline-flex items-center justify-center rounded-xl border border-[#1a2945]/15 bg-white px-3 py-2 text-xs font-semibold text-[#1a2945] transition-colors hover:bg-white/80 md:px-4 md:text-sm"
               >
                 View Live Website
               </Link>
               <Link
                 href="/admin/cms/media"
-                className="inline-flex items-center justify-center rounded-xl border border-[#1a2945]/15 bg-white px-4 py-2 text-sm font-semibold text-[#1a2945] transition-colors hover:bg-white/80"
+                className="inline-flex items-center justify-center rounded-xl border border-[#1a2945]/15 bg-white px-3 py-2 text-xs font-semibold text-[#1a2945] transition-colors hover:bg-white/80 md:px-4 md:text-sm"
               >
                 Open Media Library
               </Link>
@@ -536,7 +550,7 @@ export default function AdminCmsEditorAllSections() {
                 type="button"
                 onClick={() => void handleRefreshMedia()}
                 disabled={isRefreshingMedia}
-                className="inline-flex items-center justify-center rounded-xl border border-[#1a2945]/15 bg-[#f5e6e0] px-4 py-2 text-sm font-semibold text-[#1a2945] transition-colors hover:bg-[#ead5cd] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center justify-center rounded-xl border border-[#1a2945]/15 bg-[#f5e6e0] px-3 py-2 text-xs font-semibold text-[#1a2945] transition-colors hover:bg-[#ead5cd] disabled:cursor-not-allowed disabled:opacity-60 md:px-4 md:text-sm"
               >
                 {isRefreshingMedia ? 'Refreshing...' : 'Refresh Media'}
               </button>
@@ -544,7 +558,7 @@ export default function AdminCmsEditorAllSections() {
                 type="button"
                 onClick={() => void handleSaveAll()}
                 disabled={isSaving || !hasUnsavedChanges}
-                className="inline-flex items-center justify-center rounded-xl bg-[#c74444] px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#a63535] disabled:cursor-not-allowed disabled:bg-[#c74444]/60"
+                className="inline-flex items-center justify-center rounded-xl bg-[#c74444] px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#a63535] disabled:cursor-not-allowed disabled:bg-[#c74444]/60 md:px-5 md:text-sm"
               >
                 {isSaving ? 'Saving...' : 'Save All Changes'}
               </button>
@@ -554,18 +568,18 @@ export default function AdminCmsEditorAllSections() {
       </div>
 
       {error ? (
-        <div className="mx-auto mt-4 w-full max-w-6xl rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 p-4 text-sm text-[#7a1f1f]">
+        <div className="mx-auto mt-4 w-full max-w-6xl rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 p-3 text-xs text-[#7a1f1f] md:p-4 md:text-sm">
           {error}
         </div>
       ) : null}
 
       {success ? (
-        <div className="mx-auto mt-4 w-full max-w-6xl rounded-xl border border-[#1a7b8e]/20 bg-[#1a7b8e]/10 p-4 text-sm text-[#0e243a]">
+        <div className="mx-auto mt-4 w-full max-w-6xl rounded-xl border border-[#1a7b8e]/20 bg-[#1a7b8e]/10 p-3 text-xs text-[#0e243a] md:p-4 md:text-sm">
           {success}
         </div>
       ) : null}
 
-      <div className="mx-auto mt-6 w-full max-w-6xl space-y-8">
+      <div className="mx-auto mt-4 w-full max-w-6xl space-y-6 md:mt-6 md:space-y-8">
         <CmsSectionCard
           title={sectionLabel('siteChrome')}
           description="Navigation labels, logo, and the hero media at the top of the site."
@@ -645,7 +659,7 @@ export default function AdminCmsEditorAllSections() {
                 <p className="text-sm font-semibold text-[#1a2945]/70">
                   Navigation Item {index + 1}
                 </p>
-                <div className="mt-3 grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+                <div className="mt-3 flex flex-col gap-4 md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
                   <CmsField
                     label="Label"
                     value={item.label}
@@ -670,7 +684,7 @@ export default function AdminCmsEditorAllSections() {
                       updateDraft('siteChrome', { navItems: nextItems });
                     }}
                   />
-                  <div className="flex items-end">
+                  <div className="flex items-end md:items-end">
                     <button
                       type="button"
                       onClick={() =>
@@ -681,7 +695,7 @@ export default function AdminCmsEditorAllSections() {
                         })
                       }
                       disabled={siteChrome.navItems.length === 1}
-                      className="rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 px-4 py-2 text-sm font-semibold text-[#7a1f1f] transition-colors hover:bg-[#c74444]/20 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="w-full rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 px-4 py-2 text-xs font-semibold text-[#7a1f1f] transition-colors hover:bg-[#c74444]/20 disabled:cursor-not-allowed disabled:opacity-60 md:w-auto md:text-sm"
                     >
                       Remove
                     </button>
@@ -691,7 +705,7 @@ export default function AdminCmsEditorAllSections() {
             ))}
           </div>
 
-          <div className="grid gap-4 xl:grid-cols-3">
+          <div className="flex flex-col gap-4 md:grid md:grid-cols-2 xl:grid-cols-3">
             <CmsImageSelect
               title="Logo"
               imageSrc={siteChrome.logoSrc}
@@ -1558,6 +1572,29 @@ export default function AdminCmsEditorAllSections() {
           </div>
         </CmsSectionCard>
       </div>
+
+      {/* Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#c74444] text-white shadow-lg transition-all hover:bg-[#a63535] hover:shadow-xl md:h-14 md:w-14"
+          aria-label="Back to top"
+        >
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 10l7-7m0 0l7 7m-7-7v18"
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }

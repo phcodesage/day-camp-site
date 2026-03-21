@@ -33,6 +33,7 @@ export async function GET(request: Request) {
         phone: item.phone,
         activities: item.activities,
         preferredDays: item.preferredDays,
+        startDate: item.startDate,
         notes: item.notes,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,

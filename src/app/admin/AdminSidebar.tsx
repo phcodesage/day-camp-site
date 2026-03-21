@@ -17,7 +17,12 @@ const NAV = [
   },
 ] as const;
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
+export default function AdminSidebar({ isMobileOpen = false, onMobileClose }: AdminSidebarProps) {
   const pathname = usePathname();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
@@ -56,113 +61,138 @@ export default function AdminSidebar() {
     }
   };
 
+  const handleLinkClick = () => {
+    if (onMobileClose) {
+      onMobileClose();
+    }
+  };
+
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 flex w-72 flex-col overflow-y-auto border-r border-black/5 bg-white/60 backdrop-blur-md">
-      <div className="flex-1 p-6">
-        <Link
-          href="/"
-          className="mb-4 inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-[#1a2945] transition-colors hover:bg-[#f5e6e0]/70"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+    <>
+      {/* Mobile Overlay */}
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/30 md:hidden"
+          onClick={onMobileClose}
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 flex w-72 flex-col overflow-y-auto border-r border-black/5 bg-white/60 backdrop-blur-md transition-transform duration-300 ease-in-out md:translate-x-0 ${
+          isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex-1 p-6">
+          <Link
+            href="/"
+            className="mb-4 inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-[#1a2945] transition-colors hover:bg-[#f5e6e0]/70"
+            onClick={handleLinkClick}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            />
-          </svg>
-          Back to Site
-        </Link>
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Back to Site
+          </Link>
 
-        <p className="text-sm font-extrabold tracking-wide text-[#1a2945]">
-          ADMIN
-        </p>
-        <div className="mt-5 space-y-2">
-          {NAV.map((item) => {
-            const active = isActive(item.href);
-            if (!('children' in item)) {
+          <p className="text-sm font-extrabold tracking-wide text-[#1a2945]">
+            ADMIN
+          </p>
+          <div className="mt-5 space-y-2">
+            {NAV.map((item) => {
+              const active = isActive(item.href);
+              if (!('children' in item)) {
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={handleLinkClick}
+                    className={`block rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${
+                      active
+                        ? 'bg-[#c74444] text-white'
+                        : 'bg-white/0 text-[#1a2945] hover:bg-[#f5e6e0]/70'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              }
+
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`block rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${
-                    active
-                      ? 'bg-[#c74444] text-white'
-                      : 'bg-white/0 text-[#1a2945] hover:bg-[#f5e6e0]/70'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            }
+                <div key={item.href} className="rounded-2xl">
+                  <Link
+                    href={item.href}
+                    onClick={handleLinkClick}
+                    className={`block rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${
+                      active
+                        ? 'bg-[#c74444] text-white'
+                        : 'bg-white/0 text-[#1a2945] hover:bg-[#f5e6e0]/70'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
 
-            return (
-              <div key={item.href} className="rounded-2xl">
-                <Link
-                  href={item.href}
-                  className={`block rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${
-                    active
-                      ? 'bg-[#c74444] text-white'
-                      : 'bg-white/0 text-[#1a2945] hover:bg-[#f5e6e0]/70'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-
-                <div className="mt-2 ml-4 space-y-1 border-l border-[#1a2945]/10 pl-4">
-                  {item.children.map((child) => {
-                    const childActive = pathname === child.href;
-                    return (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        className={`block rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
-                          childActive
-                            ? 'bg-[#1a2945] text-white'
-                            : 'text-[#1a2945]/80 hover:bg-[#f5e6e0]/70'
-                        }`}
-                      >
-                        {child.label}
-                      </Link>
-                    );
-                  })}
+                  <div className="mt-2 ml-4 space-y-1 border-l border-[#1a2945]/10 pl-4">
+                    {item.children.map((child) => {
+                      const childActive = pathname === child.href;
+                      return (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          onClick={handleLinkClick}
+                          className={`block rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                            childActive
+                              ? 'bg-[#1a2945] text-white'
+                              : 'text-[#1a2945]/80 hover:bg-[#f5e6e0]/70'
+                          }`}
+                        >
+                          {child.label}
+                        </Link>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="border-t border-black/5 bg-white/40 p-6">
-        <div className="mb-4 rounded-2xl border border-[#1a2945]/10 bg-white/80 p-4">
-          <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-[#1a2945]/55">
-            Secure Session
-          </p>
-          <p className="mt-2 text-sm text-[#1a2945]/80">
-            Sign out when you finish. This workspace controls live CMS content,
-            registration data, and analytics.
-          </p>
-        </div>
-
-        {logoutError ? (
-          <div className="mb-4 rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 px-4 py-3 text-sm text-[#7a1f1f]">
-            {logoutError}
+              );
+            })}
           </div>
-        ) : null}
+        </div>
 
-        <button
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-          className="w-full rounded-2xl bg-[#1a2945] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#111c31] disabled:opacity-50"
-        >
-          {isLoggingOut ? 'Ending session...' : 'Logout'}
-        </button>
-      </div>
-    </aside>
+        <div className="border-t border-black/5 bg-white/40 p-6">
+          <div className="mb-4 rounded-2xl border border-[#1a2945]/10 bg-white/80 p-4">
+            <p className="text-xs font-extrabold uppercase tracking-[0.24em] text-[#1a2945]/55">
+              Secure Session
+            </p>
+            <p className="mt-2 text-sm text-[#1a2945]/80">
+              Sign out when you finish. This workspace controls live CMS content,
+              registration data, and analytics.
+            </p>
+          </div>
+
+          {logoutError ? (
+            <div className="mb-4 rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 px-4 py-3 text-sm text-[#7a1f1f]">
+              {logoutError}
+            </div>
+          ) : null}
+
+          <button
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="w-full rounded-2xl bg-[#1a2945] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#111c31] disabled:opacity-50"
+          >
+            {isLoggingOut ? 'Ending session...' : 'Logout'}
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }

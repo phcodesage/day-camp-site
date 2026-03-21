@@ -45,13 +45,13 @@ export default function AdminAnalyticsPage() {
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-6xl p-6">
-      <h1 className="text-2xl font-extrabold text-[#1a2945]">
+    <div className="mx-auto w-full max-w-6xl p-4 pt-[73px] md:p-6 md:pt-6">
+      <h1 className="text-xl font-extrabold text-[#1a2945] md:text-2xl">
         Analytics Dashboard
       </h1>
 
       {error ? (
-        <div className="mt-4 rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 p-4 text-sm text-[#7a1f1f]">
+        <div className="mt-4 rounded-xl border border-[#c74444]/30 bg-[#c74444]/10 p-3 text-xs text-[#7a1f1f] md:p-4 md:text-sm">
           {error}
         </div>
       ) : null}
@@ -61,32 +61,32 @@ export default function AdminAnalyticsPage() {
       ) : null}
 
       {data ? (
-        <div className="mt-6 space-y-6">
+        <div className="mt-4 space-y-4 md:mt-6 md:space-y-6">
           <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-2xl bg-white/80 p-5 shadow">
-              <p className="text-sm font-semibold text-[#1a2945]/70">
+            <div className="rounded-2xl bg-white/80 p-4 shadow md:p-5">
+              <p className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">
                 Total Visits
               </p>
-              <p className="mt-2 text-3xl font-extrabold text-[#1a2945]">
+              <p className="mt-2 text-2xl font-extrabold text-[#1a2945] md:text-3xl">
                 {data.totalVisits}
               </p>
             </div>
-            <div className="rounded-2xl bg-white/80 p-5 shadow md:col-span-2">
-              <p className="text-sm font-semibold text-[#1a2945]/70">
+            <div className="rounded-2xl bg-white/80 p-4 shadow md:col-span-2 md:p-5">
+              <p className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">
                 Total Page Views
               </p>
-              <p className="mt-2 text-3xl font-extrabold text-[#1a2945]">
+              <p className="mt-2 text-2xl font-extrabold text-[#1a2945] md:text-3xl">
                 {data.totalPageViews}
               </p>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white/80 p-5 shadow">
-            <p className="text-sm font-semibold text-[#1a2945]/70">
+          <div className="rounded-2xl bg-white/80 p-4 shadow md:p-5">
+            <p className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">
               Visits by Device
             </p>
             <div className="mt-4 overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full text-left text-xs md:text-sm">
                 <thead>
                   <tr className="border-b border-black/5">
                     <th className="py-2 font-semibold text-[#1a2945]">Device</th>
