@@ -357,6 +357,34 @@ export default function AfterschoolPrograms({
           ))}
         </div>
 
+        {/* Pricing Section - Moved to top */}
+        <div className="mb-10 rounded-2xl bg-[#0e243a] p-8 text-white shadow-xl md:p-10">
+          <h3 className="mb-8 text-center text-3xl font-bold">
+            {content.pricingTitle}
+          </h3>
+
+          <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+            {content.pricingItems.map((item) => (
+              <div
+                key={item.durationLabel}
+                className="space-y-2 rounded-xl bg-white/10 p-6 text-center transition-colors hover:bg-white/20"
+              >
+                <p className="text-lg font-semibold">{item.durationLabel}</p>
+                <p className="text-3xl font-bold text-[#f5a347]">
+                  {item.price}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-xl bg-[#c74444] p-6 text-center">
+            <p className="text-2xl font-extrabold md:text-3xl">
+              {content.discountNotice}
+            </p>
+          </div>
+        </div>
+
+        {/* Registration Form */}
         <div className="rounded-2xl bg-[#f6dedd] p-8 shadow-lg md:p-10">
           <div className="mb-8 text-center">
             <h3 className="text-3xl font-bold text-[#c74444]">
@@ -683,31 +711,15 @@ export default function AfterschoolPrograms({
           <p className="mt-4 text-sm text-[#1a2945]/75">
             {content.requiredFieldsNotice}
           </p>
-        </div>
 
-        <div className="rounded-2xl bg-[#0e243a] p-8 text-white shadow-xl md:p-10">
-          <h3 className="mb-8 text-center text-3xl font-bold">
-            {content.pricingTitle}
-          </h3>
-
-          <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-            {content.pricingItems.map((item) => (
-              <div
-                key={item.durationLabel}
-                className="space-y-2 rounded-xl bg-white/10 p-6 text-center transition-colors hover:bg-white/20"
-              >
-                <p className="text-lg font-semibold">{item.durationLabel}</p>
-                <p className="text-3xl font-bold text-[#f5a347]">
-                  {item.price}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="rounded-xl bg-[#c74444] p-6 text-center">
-            <p className="text-2xl font-extrabold md:text-3xl">
-              {content.discountNotice}
-            </p>
+          {/* Contact Info at bottom */}
+          <div className="mt-8 rounded-xl bg-white/50 p-6 text-center">
+            <p className="mb-2 font-semibold text-[#1a2945]">Questions? Contact us:</p>
+            <div className="space-y-1 text-sm text-[#1a2945]/80">
+              <p>Email: Info@exceedlearningcenterny.com</p>
+              <p>Call: +1 (516) 226-3114</p>
+              <p>Visit: 1360 Willis Ave, Albertson, NY 11507</p>
+            </div>
           </div>
         </div>
       </div>

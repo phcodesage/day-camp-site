@@ -84,9 +84,8 @@ async function App() {
         </div>
 
         <MoreInformation />
-        <CampHighlights />
-        <ProgramSchedule />
         <AfterschoolProgramsSection />
+        <ProgramSchedule />
       </main>
     </div>
   );
