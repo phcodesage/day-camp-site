@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type {
   CmsContentBySectionKey,
   CmsSectionKey,
+  CampHighlightsContent,
   AboutSectionContent,
   MoreInformationContent,
   ProgramScheduleContent,

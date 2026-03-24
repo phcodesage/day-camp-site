@@ -1,7 +1,6 @@
 import { getCmsSectionContent } from '@/lib/cms/cms';
 import AboutSection from './components/AboutSection';
 import AfterschoolProgramsSection from './components/AfterschoolProgramsSection';
-import CampHighlights from './components/CampHighlights';
 import MoreInformation from './components/MoreInformation';
 import NavBar from './components/NavBar';
 import ProgramSchedule from './components/ProgramSchedule';

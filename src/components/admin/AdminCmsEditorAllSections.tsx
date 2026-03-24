@@ -21,6 +21,8 @@ function sectionLabel(key: CmsSectionKey) {
       return 'Site Chrome';
     case 'moreInformation':
       return 'More Information';
+    case 'campHighlights':
+      return 'Camp Highlights';
     case 'programSchedule':
       return 'Program Schedule';
     case 'afterschoolPrograms':
