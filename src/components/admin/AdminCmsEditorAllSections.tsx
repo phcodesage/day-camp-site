@@ -6,7 +6,6 @@ import type { AdminMediaItem } from '@/lib/admin/mediaTypes';
 import type {
   AfterschoolProgramsContent,
   AboutSectionContent,
-  CampHighlightsContent,
   CmsContentBySectionKey,
   CmsSectionKey,
   MoreInformationContent,
@@ -22,8 +21,6 @@ function sectionLabel(key: CmsSectionKey) {
       return 'Site Chrome';
     case 'moreInformation':
       return 'More Information';
-    case 'campHighlights':
-      return 'Camp Highlights';
     case 'programSchedule':
       return 'Program Schedule';
     case 'afterschoolPrograms':
@@ -508,7 +505,6 @@ export default function AdminCmsEditorAllSections() {
   const about = drafts.about as AboutSectionContent;
   const siteChrome = drafts.siteChrome as SiteChromeContent;
   const moreInformation = drafts.moreInformation as MoreInformationContent;
-  const campHighlights = drafts.campHighlights as CampHighlightsContent;
   const programSchedule = drafts.programSchedule as ProgramScheduleContent;
   const afterschoolPrograms =
     drafts.afterschoolPrograms as AfterschoolProgramsContent;
@@ -861,95 +857,6 @@ export default function AdminCmsEditorAllSections() {
               updateDraft('moreInformation', { imageAlt: value })
             }
           />
-        </CmsSectionCard>
-
-        <CmsSectionCard
-          title={sectionLabel('campHighlights')}
-          description="Highlights copy, activity list, and section media."
-        >
-          <div className="grid gap-4 md:grid-cols-2">
-            <CmsField
-              label="Intro Heading"
-              value={campHighlights.introHeading}
-              onChange={(value) =>
-                updateDraft('campHighlights', { introHeading: value })
-              }
-            />
-            <CmsField
-              label="Activities (comma separated)"
-              value={toCommaSeparated(campHighlights.activities)}
-              onChange={(value) =>
-                updateDraft('campHighlights', {
-                  activities: parseCommaSeparated(value),
-                })
-              }
-            />
-          </div>
-
-          <CmsMediaPicker
-            title="Camp Highlights Media"
-            imageSrc={campHighlights.imageSrc}
-            videoUrl={campHighlights.videoUrl}
-            imageAlt={campHighlights.imageAlt}
-            mediaItems={mediaItems}
-            previewClassName="aspect-[16/9]"
-            onImageSrcChange={(value) =>
-              updateDraft('campHighlights', { imageSrc: value })
-            }
-            onVideoUrlChange={(value) =>
-              updateDraft('campHighlights', { videoUrl: value })
-            }
-            onImageAltChange={(value) =>
-              updateDraft('campHighlights', { imageAlt: value })
-            }
-          />
-
-          <div className="space-y-4">
-            <p className="text-sm font-semibold text-[#1a2945]/70">
-              Highlights
-            </p>
-            {campHighlights.highlights.map((item, index) => (
-              <div
-                key={`${item.boldText}-${index}`}
-                className="rounded-2xl border border-black/5 bg-white p-4"
-              >
-                <p className="text-sm font-semibold text-[#1a2945]/70">
-                  Highlight {index + 1}
-                </p>
-                <div className="mt-3 grid gap-4 md:grid-cols-2">
-                  <CmsField
-                    label="Bold Text"
-                    value={item.boldText}
-                    onChange={(value) => {
-                      const nextHighlights = [...campHighlights.highlights];
-                      nextHighlights[index] = {
-                        ...nextHighlights[index],
-                        boldText: value,
-                      };
-                      updateDraft('campHighlights', {
-                        highlights: nextHighlights,
-                      });
-                    }}
-                  />
-                  <CmsField
-                    label="Text"
-                    value={item.text}
-                    onChange={(value) => {
-                      const nextHighlights = [...campHighlights.highlights];
-                      nextHighlights[index] = {
-                        ...nextHighlights[index],
-                        text: value,
-                      };
-                      updateDraft('campHighlights', {
-                        highlights: nextHighlights,
-                      });
-                    }}
-                    multiline
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
         </CmsSectionCard>
 
         <CmsSectionCard

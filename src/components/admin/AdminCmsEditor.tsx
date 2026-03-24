@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import type {
   CmsContentBySectionKey,
   CmsSectionKey,
-  CampHighlightsContent,
   AboutSectionContent,
   MoreInformationContent,
   ProgramScheduleContent,
@@ -15,7 +14,6 @@ import type {
 const SECTION_KEYS: CmsSectionKey[] = [
   'about',
   'moreInformation',
-  'campHighlights',
   'programSchedule',
   'afterschoolPrograms',
 ];
@@ -28,8 +26,6 @@ function sectionLabel(key: CmsSectionKey) {
       return 'About Section';
     case 'moreInformation':
       return 'More Information';
-    case 'campHighlights':
-      return 'Camp Highlights';
     case 'programSchedule':
       return 'Program Schedule';
     case 'afterschoolPrograms':
