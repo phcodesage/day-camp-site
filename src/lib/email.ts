@@ -59,7 +59,7 @@ export async function sendRegistrationConfirmationEmail(
         
         <p>If you have any questions, please contact us at:</p>
         <ul>
-          <li>Email: Afterschool@exceedlearningcenterny.com</li>
+          <li>Email: kidsprograms@exceedlearningcenterny.com</li>
           <li>Phone: +1 (516) 226-3114</li>
           <li>Address: 1360 Willis Ave, Albertson, NY</li>
         </ul>

@@ -716,7 +716,7 @@ export default function AfterschoolPrograms({
           <div className="mt-8 rounded-xl bg-white/50 p-6 text-center">
             <p className="mb-2 font-semibold text-[#1a2945]">Questions? Contact us:</p>
             <div className="space-y-1 text-sm text-[#1a2945]/80">
-              <p>Email: Info@exceedlearningcenterny.com</p>
+              <p>Email: info@exceedlearningcenterny.com</p>
               <p>Call: +1 (516) 226-3114</p>
               <p>Visit: 1360 Willis Ave, Albertson, NY 11507</p>
             </div>

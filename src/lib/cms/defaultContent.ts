@@ -35,7 +35,7 @@ export const DEFAULT_CMS_CONTENT: CmsContentBySectionKey = {
   moreInformation: {
     headingLine1: 'MORE',
     headingLine2: 'INFORMATION',
-    email: 'Afterschool@exceedlearningcenterny.com',
+    email: 'kidsprograms@exceedlearningcenterny.com',
     phone: '+1 (516) 226-3114',
     address: '1360 Willis Ave, Albertson, NY',
     websiteLabel: 'www.exceedlearningcenterny.com',
