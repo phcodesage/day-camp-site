@@ -30,6 +30,7 @@ export type RegistrationPayload = {
   preferredDays: string;
   startDate: string;
   notes: string;
+  pianoLesson?: boolean;
 };
 
 export type RegistrationField = keyof RegistrationPayload;
@@ -146,6 +147,7 @@ export function normalizeRegistrationPayload(
     startDate: getTrimmedString(payload.startDate),
     notes: getTrimmedString(payload.notes),
     activities: normalizeOptionSelections(payload.activities, activityOptions),
+    pianoLesson: Boolean(payload.pianoLesson),
   };
 }
 

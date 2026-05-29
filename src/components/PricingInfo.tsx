@@ -55,7 +55,7 @@ export default function PricingInfo() {
           </ul>
 
           <p className="text-center font-semibold underline underline-offset-4 text-[#1a2945]/90">
-            www.exceedlearningcenterny.com
+            kidsprograms@exceedlearningcenterny.com
           </p>
         </div>
       </div>

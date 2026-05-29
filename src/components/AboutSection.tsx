@@ -6,7 +6,7 @@ export default async function AboutSection() {
   const content = await getCmsSectionContent('about');
 
   return (
-    <section id="about" className="z-10 space-y-6 scroll-mt-24">
+    <section id="about" className="scroll-reveal z-10 space-y-6 scroll-mt-24">
       <h1 className="text-5xl font-bold leading-tight text-[#c74444] md:text-6xl">
         {content.heading}
       </h1>

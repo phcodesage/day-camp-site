@@ -47,6 +47,7 @@ export async function GET() {
         `Phone: ${item.phone}`,
         `Activities: ${item.activities.join(', ')}`,
         `Preferred Days: ${item.preferredDays}`,
+        `Piano Lesson Add-on: ${item.pianoLesson ? 'Yes' : 'No'}`,
         'Notes:',
         formatNotes(item.notes),
         '',

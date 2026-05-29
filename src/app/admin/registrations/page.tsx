@@ -12,6 +12,7 @@ type RegistrationItem = {
   preferredDays: string;
   startDate: string;
   notes?: string;
+  pianoLesson?: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -128,6 +129,9 @@ export default function AdminRegistrationsPage() {
                 Preferred Days
               </th>
               <th className="py-2 font-semibold text-[#1a2945]">
+                Piano
+              </th>
+              <th className="py-2 font-semibold text-[#1a2945]">
                 Start Date
               </th>
               <th className="py-2 font-semibold text-[#1a2945]">
@@ -152,6 +156,9 @@ export default function AdminRegistrationsPage() {
                   </td>
                   <td className="py-2 text-[#1a2945]/90">
                     {item.preferredDays}
+                  </td>
+                  <td className="py-2 text-[#1a2945]/90">
+                    {item.pianoLesson ? 'Yes' : 'No'}
                   </td>
                   <td className="py-2 text-[#1a2945]/90">
                     {item.startDate
@@ -244,6 +251,10 @@ export default function AdminRegistrationsPage() {
                 <div className="flex flex-col sm:flex-row sm:gap-2">
                   <span className="text-[#1a2945]/60 font-medium min-w-[80px]">Days:</span>
                   <span className="text-[#1a2945]/90">{item.preferredDays}</span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:gap-2">
+                  <span className="text-[#1a2945]/60 font-medium min-w-[80px]">Piano:</span>
+                  <span className="text-[#1a2945]/90">{item.pianoLesson ? 'Yes' : 'No'}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:gap-2">
                   <span className="text-[#1a2945]/60 font-medium min-w-[80px]">Start Date:</span>

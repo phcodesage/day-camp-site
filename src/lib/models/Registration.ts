@@ -9,6 +9,7 @@ export interface IRegistration extends Document {
   preferredDays: string;
   startDate: string;
   notes?: string;
+  pianoLesson?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -64,6 +65,10 @@ const registrationSchema = new Schema<IRegistration>(
       maxlength: [1000, 'Notes must not exceed 1000 characters'],
       trim: true,
       default: undefined,
+    },
+    pianoLesson: {
+      type: Boolean,
+      default: false,
     },
   },
   {

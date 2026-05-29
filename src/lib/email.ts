@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export type RegistrationEmailData = {
   parentName: string;
@@ -11,11 +11,16 @@ export type RegistrationEmailData = {
   preferredDays: string;
   startDate: string;
   notes?: string;
+  pianoLesson?: boolean;
 };
 
 export async function sendRegistrationConfirmationEmail(
   data: RegistrationEmailData
 ): Promise<void> {
+  if (!resend) {
+    console.warn('Resend API key is missing. Skipping email confirmation.');
+    return;
+  }
   const fromEmail = process.env.FROM_EMAIL || 'noreply@exceedlearningcenterny.com';
   const adminEmail = process.env.ADMIN_EMAIL;
 
@@ -51,6 +56,7 @@ export async function sendRegistrationConfirmationEmail(
             <li><strong>Activities:</strong> ${data.activities.join(', ')}</li>
             <li><strong>Preferred Days:</strong> ${data.preferredDays}</li>
             <li><strong>Desired Start Date:</strong> ${formattedStartDate}</li>
+            ${data.pianoLesson ? `<li><strong>Piano Lesson Add-on:</strong> Yes</li>` : ''}
             ${data.notes ? `<li><strong>Notes:</strong> ${data.notes}</li>` : ''}
           </ul>
         </div>
@@ -89,6 +95,7 @@ export async function sendRegistrationConfirmationEmail(
               <li><strong>Activities:</strong> ${data.activities.join(', ')}</li>
               <li><strong>Preferred Days:</strong> ${data.preferredDays}</li>
               <li><strong>Desired Start Date:</strong> ${formattedStartDate}</li>
+              ${data.pianoLesson ? `<li><strong>Piano Lesson Add-on:</strong> Yes</li>` : ''}
               ${data.notes ? `<li><strong>Notes:</strong> ${data.notes}</li>` : ''}
             </ul>
           </div>

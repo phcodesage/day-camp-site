@@ -9,7 +9,7 @@ export default async function MoreInformation() {
   return (
     <section
       id="more-information"
-      className="w-full bg-[#c74444] px-6 py-16 text-white md:px-10 md:py-20 lg:px-16"
+      className="scroll-reveal w-full bg-[#c74444] px-6 py-16 text-white md:px-10 md:py-20 lg:px-16"
     >
       <div className="mx-auto max-w-4xl space-y-8 text-center">
         <h2 className="text-4xl font-extrabold leading-none tracking-wider md:text-5xl">
@@ -21,11 +21,13 @@ export default async function MoreInformation() {
           <p>{content.email}</p>
           <p>{content.phone}</p>
           <p>{content.address}</p>
-          <p className="font-semibold underline underline-offset-4">
-            <a href={content.websiteHref} target="_blank" rel="noreferrer">
-              {content.websiteLabel}
-            </a>
-          </p>
+          {content.websiteLabel ? (
+            <p className="font-semibold underline underline-offset-4">
+              <a href={content.websiteHref} target="_blank" rel="noreferrer">
+                {content.websiteLabel}
+              </a>
+            </p>
+          ) : null}
         </div>
 
         <div className="pt-4">

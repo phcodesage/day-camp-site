@@ -10,7 +10,6 @@ import {
   getRegistrationFieldErrors,
   getPreferredDaySelections,
   hasRegistrationFieldErrors,
-  type ActivityOption,
   type PreferredDayOption,
   type RegistrationField,
   type RegistrationFieldErrors,
@@ -170,32 +169,7 @@ export default function AfterschoolPrograms({
     applySingleFieldValidation(field, formData);
   };
 
-  const handleActivityChange = (activity: ActivityOption, checked: boolean) => {
-    setSubmissionState(null);
-    setFormData((current) => {
-      const nextFormData = {
-        ...current,
-        activities: checked
-          ? [...current.activities, activity]
-          : current.activities.filter((item) => item !== activity),
-      };
 
-      if (touchedFields.activities || fieldErrors.activities) {
-        applySingleFieldValidation('activities', nextFormData);
-      }
-
-      return nextFormData;
-    });
-  };
-
-  const handleActivitiesBlur = () => {
-    setTouchedFields((current) => ({
-      ...current,
-      activities: true,
-    }));
-
-    applySingleFieldValidation('activities', formData);
-  };
 
   const handlePreferredDayChange = (
     day: PreferredDayOption,
@@ -212,10 +186,37 @@ export default function AfterschoolPrograms({
         ? Array.from(new Set([...currentDays, day]))
         : currentDays.filter((item) => item !== day);
 
+      const dayToActivitiesMap: Record<string, string[]> = {
+        'Monday': ['CHESS', 'HOMEWORK HELP'],
+        'Tuesday': ['ABACUS', 'BRAIN GAMES'],
+        'Wednesday': ['ART', 'HOMEWORK HELP'],
+        'Thursday': ['BRAIN GAMES', 'HOMEWORK HELP'],
+        'Friday': ['CHESS', 'HOMEWORK HELP'],
+      };
+
+      const nextActivities: string[] = [];
+      nextDays.forEach((d) => {
+        const activitiesForDay = dayToActivitiesMap[d] || [];
+        activitiesForDay.forEach((act) => {
+          if (!nextActivities.includes(act)) {
+            nextActivities.push(act);
+          }
+        });
+      });
+
       const nextFormData = {
         ...current,
         preferredDays: formatPreferredDays(nextDays),
+        activities: nextActivities,
       };
+
+      if (nextActivities.length > 0) {
+        setFieldErrors((curr) => {
+          const updated = { ...curr };
+          delete updated.activities;
+          return updated;
+        });
+      }
 
       if (touchedFields.preferredDays || fieldErrors.preferredDays) {
         applySingleFieldValidation('preferredDays', nextFormData);
@@ -330,7 +331,7 @@ export default function AfterschoolPrograms({
   return (
     <section
       id="afterschool"
-      className="w-full scroll-mt-24 bg-white px-6 py-16 text-[#1a2945] md:px-10 md:py-24 lg:px-16"
+      className="scroll-reveal w-full scroll-mt-24 bg-white px-6 py-16 text-[#1a2945] md:px-10 md:py-24 lg:px-16"
     >
       <div className="mx-auto max-w-6xl space-y-12">
         <div className="space-y-4 text-center">
@@ -341,46 +342,149 @@ export default function AfterschoolPrograms({
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
-          {content.activityOptions.map((activity) => (
-            <div
-              key={activity}
-              className="space-y-3 rounded-2xl bg-[#f6dedd] p-6 text-center shadow-lg transition-shadow hover:shadow-xl"
-            >
-              <h3 className="text-xl font-bold uppercase text-[#c74444]">
-                {activity}
-              </h3>
-              <p className="text-sm font-semibold">
-                {content.activityScheduleLabel}
-              </p>
-              <p className="text-sm">{content.activityTimeLabel}</p>
-            </div>
-          ))}
+          {content.activityOptions.map((option) => {
+            const parts = option.split(':');
+            const day = parts[0]?.trim();
+            const activities = parts[1]?.trim();
+            return (
+              <div
+                key={option}
+                className="space-y-3 rounded-2xl bg-[#f6dedd] p-6 text-center shadow-lg transition-shadow hover:shadow-xl flex flex-col justify-between"
+              >
+                <div>
+                  <h3 className="text-xl font-bold uppercase text-[#c74444]">
+                    {day}
+                  </h3>
+                  {activities && (
+                    <p className="mt-2 text-sm font-semibold text-[#1a2945]">
+                      {activities}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-[#1a2945]/70 mt-2">
+                    {content.activityScheduleLabel}
+                  </p>
+                  <p className="text-sm font-semibold text-[#1a7b8e]">{content.activityTimeLabel}</p>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Pricing Section - Moved to top */}
         <div className="mb-10 rounded-2xl bg-[#0e243a] p-8 text-white shadow-xl md:p-10">
-          <h3 className="mb-8 text-center text-3xl font-bold">
+          <h3 className="mb-2 text-center text-3xl font-bold">
             {content.pricingTitle}
           </h3>
+          <p className="mb-8 text-center text-sm text-white/70">
+            Sign up early and save! Prices go up after September 26.
+          </p>
 
           <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-            {content.pricingItems.map((item) => (
+            {[
+              {
+                title: '1 Day / Week',
+                earlyPrice: '$90',
+                regularPrice: '$100',
+                unit: 'day',
+                link: 'https://securelink-prod.valorpaytech.com:4430/?redirect=1&uid=8ac95c2d-5b74-11f1-a8e1-12a0879a85b1',
+              },
+              {
+                title: '2 or 3 Days / Week',
+                earlyPrice: '$80',
+                regularPrice: '$90',
+                unit: 'day',
+                link: 'https://securelink-prod.valorpaytech.com:4430/?redirect=1&uid=9c914479-5b74-11f1-a8e1-12a0879a85b1',
+              },
+              {
+                title: '4 or 5 Days / Week',
+                earlyPrice: '$350',
+                regularPrice: '$400',
+                unit: 'week',
+                link: 'https://securelink-prod.valorpaytech.com:4430/?redirect=1&uid=5fd0292f-5b74-11f1-a8e1-12a0879a85b1',
+              },
+              {
+                title: 'Monthly (School Days)',
+                earlyPrice: '$1,300',
+                regularPrice: '$1,500',
+                unit: 'month',
+                link: '#afterschool-form',
+              },
+              {
+                title: 'Piano Lesson Add-on',
+                earlyPrice: 'Inquire',
+                regularPrice: 'Inquire',
+                unit: 'lesson',
+                link: 'piano',
+              },
+            ].map((tier) => (
               <div
-                key={item.durationLabel}
-                className="space-y-2 rounded-xl bg-white/10 p-6 text-center transition-colors hover:bg-white/20"
+                key={tier.title}
+                className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/10 p-6 text-center transition-all hover:-translate-y-1 hover:bg-white/15"
               >
-                <p className="text-lg font-semibold">{item.durationLabel}</p>
-                <p className="text-3xl font-bold text-[#f5a347]">
-                  {item.price}
-                </p>
+                <div>
+                  <h4 className="text-lg font-bold text-white min-h-[56px] flex items-center justify-center">
+                    {tier.title}
+                  </h4>
+                  <div className="mt-4 space-y-1">
+                    <p className="text-xs text-white/60">Early Bird Price</p>
+                    <div className="flex items-baseline justify-center gap-0.5">
+                      <span className="text-3xl font-extrabold text-[#f5a347]">{tier.earlyPrice}</span>
+                      {tier.unit && <span className="text-xs text-white/50">/{tier.unit}</span>}
+                    </div>
+                    <p className="text-[10px] text-white/40 italic">Until Sept 26</p>
+                  </div>
+                  
+                  <div className="mt-4 pt-3 border-t border-white/5">
+                    <p className="text-xs text-white/60">Regular Price</p>
+                    <div className="flex items-baseline justify-center gap-0.5">
+                      <span className="text-xl font-bold text-white/95">{tier.regularPrice}</span>
+                      {tier.unit && <span className="text-xs text-white/50">/{tier.unit}</span>}
+                    </div>
+                    <p className="text-[10px] text-white/40 italic">From Sept 26</p>
+                  </div>
+                </div>
+                
+                {tier.link === 'piano' ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setFormData((prev) => ({ ...prev, pianoLesson: true }));
+                      const el = document.getElementById('piano-addon-field');
+                      if (el) {
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }
+                    }}
+                    className="mt-6 w-full rounded-xl bg-[#f5a347] px-4 py-2.5 text-xs font-bold text-[#0e243a] transition-all hover:bg-[#e49236] active:scale-95 shadow-md"
+                  >
+                    Add to Register
+                  </button>
+                ) : tier.link && tier.link.startsWith('http') ? (
+                  <a
+                    href={tier.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-6 block w-full rounded-xl bg-[#c74444] px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-[#a63535] active:scale-95 shadow-md"
+                  >
+                    Pay Early Bird
+                  </a>
+                ) : (
+                  <a
+                    href="#afterschool-form"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.getElementById('afterschool-form');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="mt-6 block w-full rounded-xl bg-[#1a7b8e] px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-[#145f6e] active:scale-95 shadow-md"
+                  >
+                    Register Below
+                  </a>
+                )}
               </div>
             ))}
-          </div>
-
-          <div className="rounded-xl bg-[#c74444] p-6 text-center">
-            <p className="text-2xl font-extrabold md:text-3xl">
-              {content.discountNotice}
-            </p>
           </div>
         </div>
 
@@ -558,52 +662,7 @@ export default function AfterschoolPrograms({
               </div>
             </label>
 
-            <div className="space-y-3 md:col-span-2">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="font-semibold">
-                  {content.activitiesLabel} <span className="text-[#c74444]">*</span>
-                </p>
-                <p className="text-sm text-[#1a2945]/65">
-                  {formData.activities.length} {content.selectedCountSuffix}
-                </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-                {content.activityOptions.map((activity) => {
-                  const isSelected = formData.activities.includes(activity);
-
-                  return (
-                    <label
-                      key={`form-${activity}`}
-                      className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-sm transition-colors ${
-                        isSelected
-                          ? 'border-[#1a7b8e]/40 bg-[#1a7b8e]/10'
-                          : fieldErrors.activities && touchedFields.activities
-                            ? 'border-[#c74444]/35 bg-white'
-                            : 'border-[#1a2945]/20 bg-white'
-                      }`}
-                    >
-                      <input
-                        type="checkbox"
-                        name="activities"
-                        value={activity}
-                        checked={isSelected}
-                        onChange={(event) =>
-                          handleActivityChange(activity, event.target.checked)
-                        }
-                        onBlur={handleActivitiesBlur}
-                      />
-                      <span>{activity}</span>
-                    </label>
-                  );
-                })}
-              </div>
-
-              <p className="text-xs text-[#c74444]">
-                {touchedFields.activities ? fieldErrors.activities : ''}
-              </p>
-            </div>
-
+            {/* Preferred Days / Select Days */}
             <div className="space-y-3 md:col-span-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-semibold">
@@ -617,11 +676,19 @@ export default function AfterschoolPrograms({
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
                 {content.preferredDayOptions.map((day) => {
                   const isSelected = selectedPreferredDays.includes(day);
+                  const dayDescriptions: Record<string, string> = {
+                    'Monday': 'Chess & Homework Help',
+                    'Tuesday': 'Abacus & Brain Games',
+                    'Wednesday': 'Arts & Homework Help',
+                    'Thursday': 'Brain Games & Homework Help',
+                    'Friday': 'Chess & Homework Help',
+                  };
+                  const description = dayDescriptions[day];
 
                   return (
                     <label
                       key={`day-${day}`}
-                      className={`flex items-center gap-2 rounded-xl border px-3 py-3 text-sm transition-colors ${
+                      className={`flex flex-col justify-between rounded-xl border px-3 py-3 text-sm transition-colors cursor-pointer ${
                         isSelected
                           ? 'border-[#1a7b8e]/40 bg-[#1a7b8e]/10'
                           : fieldErrors.preferredDays && touchedFields.preferredDays
@@ -629,17 +696,25 @@ export default function AfterschoolPrograms({
                             : 'border-[#1a2945]/20 bg-white'
                       }`}
                     >
-                      <input
-                        type="checkbox"
-                        name="preferredDays"
-                        value={day}
-                        checked={isSelected}
-                        onChange={(event) =>
-                          handlePreferredDayChange(day, event.target.checked)
-                        }
-                        onBlur={handlePreferredDaysBlur}
-                      />
-                      <span>{day}</span>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          name="preferredDays"
+                          value={day}
+                          checked={isSelected}
+                          onChange={(event) =>
+                            handlePreferredDayChange(day, event.target.checked)
+                          }
+                          onBlur={handlePreferredDaysBlur}
+                          className="h-4 w-4 rounded text-[#1a7b8e] focus:ring-[#1a7b8e]"
+                        />
+                        <span className="font-bold">{day}</span>
+                      </div>
+                      {description && (
+                        <span className="text-xs text-[#1a2945]/70 mt-1 pl-6">
+                          {description}
+                        </span>
+                      )}
                     </label>
                   );
                 })}
@@ -648,6 +723,33 @@ export default function AfterschoolPrograms({
               <p className="text-xs text-[#c74444]">
                 {touchedFields.preferredDays ? fieldErrors.preferredDays : ''}
               </p>
+            </div>
+
+            {/* Piano Lesson Add-on option */}
+            <div id="piano-addon-field" className="md:col-span-2 space-y-3">
+              <p className="font-semibold">Add-on Options</p>
+              <label className="flex items-center justify-between p-4 rounded-xl border border-[#1a7b8e]/20 bg-white hover:bg-white/80 cursor-pointer transition-colors shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-[#f5a347]/10 text-[#f5a347]">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-bold text-[#1a2945]">Piano Lesson Add-on</p>
+                    <p className="text-xs text-[#1a2945]/70">Add private piano lessons to your child's afterschool schedule</p>
+                  </div>
+                </div>
+                <input
+                  type="checkbox"
+                  name="pianoLesson"
+                  checked={formData.pianoLesson || false}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, pianoLesson: e.target.checked }));
+                  }}
+                  className="h-5 w-5 rounded text-[#1a7b8e] focus:ring-[#1a7b8e]"
+                />
+              </label>
             </div>
 
             <label className="flex flex-col gap-2 md:col-span-2">
@@ -716,7 +818,7 @@ export default function AfterschoolPrograms({
           <div className="mt-8 rounded-xl bg-white/50 p-6 text-center">
             <p className="mb-2 font-semibold text-[#1a2945]">Questions? Contact us:</p>
             <div className="space-y-1 text-sm text-[#1a2945]/80">
-              <p>Email: info@exceedlearningcenterny.com</p>
+              <p>Email: kidsprograms@exceedlearningcenterny.com</p>
               <p>Call: +1 (516) 226-3114</p>
               <p>Visit: 1360 Willis Ave, Albertson, NY 11507</p>
             </div>

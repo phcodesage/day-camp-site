@@ -15,7 +15,7 @@ export default async function ProgramSchedule() {
   const videoUrl = content.videoUrl?.trim();
 
   return (
-    <section id="schedule" className="w-full bg-[#0e243a] text-white px-6 md:px-10 lg:px-16 py-16 md:py-24 scroll-mt-24">
+    <section id="schedule" className="scroll-reveal w-full bg-[#0e243a] text-white px-6 md:px-10 lg:px-16 py-16 md:py-24 scroll-mt-24">
       <div className="max-w-5xl mx-auto grid gap-10 md:gap-14">
         {content.badgeLabels.length ? (
           <div className="grid gap-4 max-w-xl w-full mx-auto">

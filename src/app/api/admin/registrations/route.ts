@@ -35,6 +35,7 @@ export async function GET(request: Request) {
         preferredDays: item.preferredDays,
         startDate: item.startDate,
         notes: item.notes,
+        pianoLesson: item.pianoLesson,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
       })),

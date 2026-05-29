@@ -113,6 +113,7 @@ export async function POST(request: Request) {
       preferredDays: data.preferredDays,
       startDate: data.startDate,
       notes: data.notes || undefined,
+      pianoLesson: data.pianoLesson || false,
     });
 
     await registration.save();
@@ -128,6 +129,7 @@ export async function POST(request: Request) {
         preferredDays: data.preferredDays,
         startDate: data.startDate,
         notes: data.notes || undefined,
+        pianoLesson: data.pianoLesson || false,
       };
       await sendRegistrationConfirmationEmail(emailData);
     } catch (emailError) {
