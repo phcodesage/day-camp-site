@@ -31,6 +31,7 @@ export type RegistrationPayload = {
   startDate: string;
   notes: string;
   pianoLesson?: boolean;
+  chessAddon?: boolean;
 };
 
 export type RegistrationField = keyof RegistrationPayload;
@@ -148,6 +149,7 @@ export function normalizeRegistrationPayload(
     notes: getTrimmedString(payload.notes),
     activities: normalizeOptionSelections(payload.activities, activityOptions),
     pianoLesson: Boolean(payload.pianoLesson),
+    chessAddon: Boolean(payload.chessAddon),
   };
 }
 

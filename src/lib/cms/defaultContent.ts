@@ -13,9 +13,9 @@ export const DEFAULT_CMS_CONTENT: CmsContentBySectionKey = {
     accentImageSrc: '/images/kids/blue-leaf.png',
     accentImageAlt: 'Decorative blue leaf',
     navItems: [
+      { href: '#afterschool', label: 'Afterschool Programs' },
       { href: '#about', label: 'About' },
       { href: '#more-information', label: 'More Information' },
-      { href: '#afterschool', label: 'Afterschool Programs' },
       { href: '#schedule', label: 'Schedule' },
     ],
     mobileMenuOpenLabel: 'Open menu',
@@ -101,7 +101,7 @@ export const DEFAULT_CMS_CONTENT: CmsContentBySectionKey = {
       'Friday: Chess & Homework Help',
     ],
     activityScheduleLabel: 'Monday to Friday',
-    activityTimeLabel: '4:00 PM - 6:00 PM',
+    activityTimeLabel: 'Drop off anytime between 3 and 6 upto 2 hours',
     registrationTitle: 'Registration Form',
     registrationDescription:
       'Fill up the form below to register and we will contact you to settle your payment.',

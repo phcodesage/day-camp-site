@@ -10,6 +10,7 @@ export interface IRegistration extends Document {
   startDate: string;
   notes?: string;
   pianoLesson?: boolean;
+  chessAddon?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -67,6 +68,10 @@ const registrationSchema = new Schema<IRegistration>(
       default: undefined,
     },
     pianoLesson: {
+      type: Boolean,
+      default: false,
+    },
+    chessAddon: {
       type: Boolean,
       default: false,
     },

@@ -12,6 +12,7 @@ export type RegistrationEmailData = {
   startDate: string;
   notes?: string;
   pianoLesson?: boolean;
+  chessAddon?: boolean;
 };
 
 export async function sendRegistrationConfirmationEmail(
@@ -57,6 +58,7 @@ export async function sendRegistrationConfirmationEmail(
             <li><strong>Preferred Days:</strong> ${data.preferredDays}</li>
             <li><strong>Desired Start Date:</strong> ${formattedStartDate}</li>
             ${data.pianoLesson ? `<li><strong>Piano Lesson Add-on:</strong> Yes</li>` : ''}
+            ${data.chessAddon ? `<li><strong>Chess Add-on:</strong> Yes</li>` : ''}
             ${data.notes ? `<li><strong>Notes:</strong> ${data.notes}</li>` : ''}
           </ul>
         </div>
@@ -96,6 +98,7 @@ export async function sendRegistrationConfirmationEmail(
               <li><strong>Preferred Days:</strong> ${data.preferredDays}</li>
               <li><strong>Desired Start Date:</strong> ${formattedStartDate}</li>
               ${data.pianoLesson ? `<li><strong>Piano Lesson Add-on:</strong> Yes</li>` : ''}
+              ${data.chessAddon ? `<li><strong>Chess Add-on:</strong> Yes</li>` : ''}
               ${data.notes ? `<li><strong>Notes:</strong> ${data.notes}</li>` : ''}
             </ul>
           </div>

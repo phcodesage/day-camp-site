@@ -58,6 +58,8 @@ async function App() {
           </svg>
         </div>
 
+        <AfterschoolProgramsSection />
+
         <div className="flex w-full items-center justify-center px-8 py-16 md:px-16 md:py-24 lg:px-24">
           <div className="grid w-full max-w-6xl items-center gap-12 md:grid-cols-2">
             <div className="relative">
@@ -83,7 +85,6 @@ async function App() {
         </div>
 
         <MoreInformation />
-        <AfterschoolProgramsSection />
         <ProgramSchedule />
       </main>
     </div>

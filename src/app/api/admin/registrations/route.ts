@@ -36,6 +36,7 @@ export async function GET(request: Request) {
         startDate: item.startDate,
         notes: item.notes,
         pianoLesson: item.pianoLesson,
+        chessAddon: item.chessAddon,
         createdAt: item.createdAt,
         updatedAt: item.updatedAt,
       })),

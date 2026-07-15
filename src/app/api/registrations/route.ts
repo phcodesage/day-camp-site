@@ -114,6 +114,7 @@ export async function POST(request: Request) {
       startDate: data.startDate,
       notes: data.notes || undefined,
       pianoLesson: data.pianoLesson || false,
+      chessAddon: data.chessAddon || false,
     });
 
     await registration.save();
@@ -130,6 +131,7 @@ export async function POST(request: Request) {
         startDate: data.startDate,
         notes: data.notes || undefined,
         pianoLesson: data.pianoLesson || false,
+        chessAddon: data.chessAddon || false,
       };
       await sendRegistrationConfirmationEmail(emailData);
     } catch (emailError) {

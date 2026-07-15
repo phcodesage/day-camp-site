@@ -13,6 +13,7 @@ type RegistrationItem = {
   startDate: string;
   notes?: string;
   pianoLesson?: boolean;
+  chessAddon?: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -132,6 +133,9 @@ export default function AdminRegistrationsPage() {
                 Piano
               </th>
               <th className="py-2 font-semibold text-[#1a2945]">
+                Chess
+              </th>
+              <th className="py-2 font-semibold text-[#1a2945]">
                 Start Date
               </th>
               <th className="py-2 font-semibold text-[#1a2945]">
@@ -159,6 +163,9 @@ export default function AdminRegistrationsPage() {
                   </td>
                   <td className="py-2 text-[#1a2945]/90">
                     {item.pianoLesson ? 'Yes' : 'No'}
+                  </td>
+                  <td className="py-2 text-[#1a2945]/90">
+                    {item.chessAddon ? 'Yes' : 'No'}
                   </td>
                   <td className="py-2 text-[#1a2945]/90">
                     {item.startDate
@@ -255,6 +262,10 @@ export default function AdminRegistrationsPage() {
                 <div className="flex flex-col sm:flex-row sm:gap-2">
                   <span className="text-[#1a2945]/60 font-medium min-w-[80px]">Piano:</span>
                   <span className="text-[#1a2945]/90">{item.pianoLesson ? 'Yes' : 'No'}</span>
+                </div>
+                <div className="flex flex-col sm:flex-row sm:gap-2">
+                  <span className="text-[#1a2945]/60 font-medium min-w-[80px]">Chess:</span>
+                  <span className="text-[#1a2945]/90">{item.chessAddon ? 'Yes' : 'No'}</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:gap-2">
                   <span className="text-[#1a2945]/60 font-medium min-w-[80px]">Start Date:</span>

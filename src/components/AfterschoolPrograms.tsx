@@ -46,6 +46,8 @@ function createInitialFormState(): RegistrationPayload {
     preferredDays: '',
     startDate: '',
     notes: '',
+    pianoLesson: false,
+    chessAddon: false,
   };
 }
 
@@ -331,9 +333,14 @@ export default function AfterschoolPrograms({
   return (
     <section
       id="afterschool"
-      className="scroll-reveal w-full scroll-mt-24 bg-white px-6 py-16 text-[#1a2945] md:px-10 md:py-24 lg:px-16"
+      className="w-full scroll-mt-24 bg-gradient-to-b from-white via-[#f5e6e0]/20 to-[#f5e6e0]/40 px-6 py-16 text-[#1a2945] md:px-10 md:py-24 lg:px-16 relative overflow-hidden"
     >
-      <div className="mx-auto max-w-6xl space-y-12">
+      {/* Glowing background blobs to show off the glass blur effect */}
+      <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-[#1a7b8e]/10 blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-96 h-96 rounded-full bg-[#f5a347]/10 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-40 left-1/4 w-80 h-80 rounded-full bg-[#c74444]/5 blur-3xl pointer-events-none" />
+
+      <div className="mx-auto max-w-6xl space-y-12 relative z-10">
         <div className="space-y-4 text-center">
           <h2 className="text-4xl font-extrabold text-[#c74444] md:text-5xl">
             {content.heroTitle}
@@ -341,6 +348,219 @@ export default function AfterschoolPrograms({
           <p className="text-lg font-semibold">{content.heroSubtitle}</p>
         </div>
 
+        {/* Pricing Section - Moved to top */}
+        <div className="mb-10 rounded-3xl bg-[#0e243a]/80 backdrop-blur-md p-8 text-white shadow-2xl shadow-[#0e243a]/25 border border-white/10 md:p-10 relative overflow-hidden">
+          {/* Subtle reflection overlay */}
+          <div className="absolute -left-1/2 -top-1/2 w-full h-full bg-gradient-to-br from-white/5 to-transparent rotate-45 pointer-events-none" />
+
+          <h3 className="mb-2 text-center text-3xl font-bold relative z-10">
+            {content.pricingTitle}
+          </h3>
+          <p className="mb-4 text-center text-sm text-white/85 relative z-10">
+            Sign up early and save! Prices go up after September 26.
+          </p>
+          <p className="mb-8 text-center text-base font-semibold text-[#f5a347] relative z-10">
+            Flexible Schedule: Drop off anytime between 3 and 6 upto 2 hours
+          </p>
+
+          {/* Regular Tuition Grid */}
+          <div className="mb-10 relative z-10">
+            <h4 className="mb-6 text-center text-lg font-bold uppercase tracking-wider text-[#4cd0e0]">
+              General Afterschool Tuition
+            </h4>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                {
+                  title: '1 Day / Week',
+                  earlyPrice: '$90',
+                  regularPrice: '$100',
+                  unit: 'day',
+                  link: 'https://securelink-prod.valorpaytech.com:4430/?redirect=1&uid=8ac95c2d-5b74-11f1-a8e1-12a0879a85b1',
+                },
+                {
+                  title: '2 or 3 Days / Week',
+                  earlyPrice: '$80',
+                  regularPrice: '$90',
+                  unit: 'day',
+                  link: 'https://securelink-prod.valorpaytech.com:4430/?redirect=1&uid=9c914479-5b74-11f1-a8e1-12a0879a85b1',
+                },
+                {
+                  title: '4 or 5 Days / Week',
+                  earlyPrice: '$350',
+                  regularPrice: '$400',
+                  unit: 'week',
+                  link: 'https://securelink-prod.valorpaytech.com:4430/?redirect=1&uid=5fd0292f-5b74-11f1-a8e1-12a0879a85b1',
+                },
+                {
+                  title: 'Monthly (School Days)',
+                  earlyPrice: '$1,300',
+                  regularPrice: '$1,500',
+                  unit: 'month',
+                  link: '#afterschool-form',
+                },
+              ].map((tier) => (
+                <div
+                  key={tier.title}
+                  className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/10 backdrop-blur-sm p-6 text-center transition-all hover:-translate-y-1 hover:bg-white/15 hover:border-white/20 hover:shadow-xl hover:shadow-black/20"
+                >
+                  <div>
+                    <h5 className="text-lg font-bold text-white min-h-[56px] flex items-center justify-center">
+                      {tier.title}
+                    </h5>
+                    <div className="mt-4 space-y-1">
+                      <p className="text-xs text-white/80">Early Bird Price</p>
+                      <div className="flex items-baseline justify-center gap-0.5">
+                        <span className="text-3xl font-extrabold text-[#f5a347]">{tier.earlyPrice}</span>
+                        {tier.unit && <span className="text-xs text-white/70">/{tier.unit}</span>}
+                      </div>
+                      <p className="text-[10px] text-white/60 italic">Until Sept 26</p>
+                    </div>
+                    
+                    <div className="mt-4 pt-3 border-t border-white/5">
+                      <p className="text-xs text-white/80">Regular Price</p>
+                      <div className="flex items-baseline justify-center gap-0.5">
+                        <span className="text-xl font-bold text-white/95">{tier.regularPrice}</span>
+                        {tier.unit && <span className="text-xs text-white/70">/{tier.unit}</span>}
+                      </div>
+                      <p className="text-[10px] text-white/60 italic">From Sept 26</p>
+                    </div>
+                  </div>
+                  
+                  {tier.link && tier.link.startsWith('http') ? (
+                    <a
+                      href={tier.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-6 block w-full rounded-xl bg-[#c74444] px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-[#a63535] active:scale-95 shadow-md"
+                    >
+                      Pay Early Bird
+                    </a>
+                  ) : (
+                    <a
+                      href="#afterschool-form"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const el = document.getElementById('afterschool-form');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="mt-6 block w-full rounded-xl bg-[#1a7b8e] px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-[#145f6e] active:scale-95 shadow-md"
+                    >
+                      Register Below
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Add-on Pricing Grid */}
+          <div className="border-t border-white/10 pt-8 relative z-10">
+            <h4 className="mb-6 text-center text-lg font-bold uppercase tracking-wider text-[#f5a347]">
+              Specialist Program Add-ons
+            </h4>
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Piano Add-on Card */}
+              <div className="flex flex-col justify-between rounded-2xl border border-[#f5a347]/20 bg-[#f5a347]/10 backdrop-blur-md p-6 transition-all hover:-translate-y-1 hover:bg-[#f5a347]/15 hover:border-[#f5a347]/40 hover:shadow-xl hover:shadow-[#f5a347]/5">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h5 className="text-xl font-bold text-white">Piano Lesson Add-on</h5>
+                    <span className="rounded-full bg-[#f5a347]/20 px-3 py-1 text-xs font-semibold text-[#f5a347]">
+                      Private Lessons
+                    </span>
+                  </div>
+                  <p className="text-xs text-white/80 mb-6">
+                    Enhance your child's schedule with premium private piano instruction.
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
+                      <span className="text-sm text-white/90">Per Lesson</span>
+                      <span className="text-lg font-extrabold text-[#f5a347]">$75</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
+                      <span className="text-sm text-white/90">Once a Week</span>
+                      <div className="text-right">
+                        <span className="text-lg font-extrabold text-[#f5a347]">$280</span>
+                        <span className="text-[10px] text-white/70 block">/month</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
+                      <span className="text-sm text-white/90">Twice a Week</span>
+                      <div className="text-right">
+                        <span className="text-lg font-extrabold text-[#f5a347]">$550</span>
+                        <span className="text-[10px] text-white/70 block">/month</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setFormData((prev) => ({ ...prev, pianoLesson: true }));
+                    const el = document.getElementById('piano-addon-field');
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                  }}
+                  className="mt-6 w-full rounded-xl bg-[#f5a347] px-4 py-3 text-sm font-bold text-[#0e243a] transition-all hover:bg-[#e49236] active:scale-95 shadow-md"
+                >
+                  Add Piano to Registration
+                </button>
+              </div>
+
+              {/* Chess Add-on Card */}
+              <div className="flex flex-col justify-between rounded-2xl border border-[#1a7b8e]/30 bg-[#1a7b8e]/10 backdrop-blur-md p-6 transition-all hover:-translate-y-1 hover:bg-[#1a7b8e]/15 hover:border-[#1a7b8e]/50 hover:shadow-xl hover:shadow-[#1a7b8e]/5">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h5 className="text-xl font-bold text-white">Chess Add-on</h5>
+                    <span className="rounded-full bg-[#1a7b8e]/20 px-3 py-1 text-xs font-semibold text-[#1a7b8e]">
+                      Expert Training
+                    </span>
+                  </div>
+                  <p className="text-xs text-white/80 mb-6">
+                    Add dedicated chess training to develop strategy and critical thinking.
+                  </p>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
+                      <span className="text-sm text-white/90">Per Lesson</span>
+                      <span className="text-lg font-extrabold text-[#1a7b8e]">$60</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
+                      <span className="text-sm text-white/90">Once a Week</span>
+                      <div className="text-right">
+                        <span className="text-lg font-extrabold text-[#1a7b8e]">$220</span>
+                        <span className="text-[10px] text-white/70 block">/month</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
+                      <span className="text-sm text-white/90">Twice a Week</span>
+                      <div className="text-right">
+                        <span className="text-lg font-extrabold text-[#1a7b8e]">$400</span>
+                        <span className="text-[10px] text-white/70 block">/month</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setFormData((prev) => ({ ...prev, chessAddon: true }));
+                    const el = document.getElementById('chess-addon-field');
+                    if (el) {
+                      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                  }}
+                  className="mt-6 w-full rounded-xl bg-[#1a7b8e] px-4 py-3 text-sm font-bold text-white transition-all hover:bg-[#145f6e] active:scale-95 shadow-md"
+                >
+                  Add Chess to Registration
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Day Schedule Grid */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
           {content.activityOptions.map((option) => {
             const parts = option.split(':');
@@ -349,7 +569,7 @@ export default function AfterschoolPrograms({
             return (
               <div
                 key={option}
-                className="space-y-3 rounded-2xl bg-[#f6dedd] p-6 text-center shadow-lg transition-shadow hover:shadow-xl flex flex-col justify-between"
+                className="space-y-3 rounded-2xl border border-white/60 bg-white/30 backdrop-blur-sm p-6 text-center shadow-lg transition-all hover:-translate-y-1 hover:bg-white/50 hover:border-white/80 hover:shadow-xl flex flex-col justify-between"
               >
                 <div>
                   <h3 className="text-xl font-bold uppercase text-[#c74444]">
@@ -372,124 +592,8 @@ export default function AfterschoolPrograms({
           })}
         </div>
 
-        {/* Pricing Section - Moved to top */}
-        <div className="mb-10 rounded-2xl bg-[#0e243a] p-8 text-white shadow-xl md:p-10">
-          <h3 className="mb-2 text-center text-3xl font-bold">
-            {content.pricingTitle}
-          </h3>
-          <p className="mb-8 text-center text-sm text-white/70">
-            Sign up early and save! Prices go up after September 26.
-          </p>
-
-          <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-            {[
-              {
-                title: '1 Day / Week',
-                earlyPrice: '$90',
-                regularPrice: '$100',
-                unit: 'day',
-                link: 'https://securelink-prod.valorpaytech.com:4430/?redirect=1&uid=8ac95c2d-5b74-11f1-a8e1-12a0879a85b1',
-              },
-              {
-                title: '2 or 3 Days / Week',
-                earlyPrice: '$80',
-                regularPrice: '$90',
-                unit: 'day',
-                link: 'https://securelink-prod.valorpaytech.com:4430/?redirect=1&uid=9c914479-5b74-11f1-a8e1-12a0879a85b1',
-              },
-              {
-                title: '4 or 5 Days / Week',
-                earlyPrice: '$350',
-                regularPrice: '$400',
-                unit: 'week',
-                link: 'https://securelink-prod.valorpaytech.com:4430/?redirect=1&uid=5fd0292f-5b74-11f1-a8e1-12a0879a85b1',
-              },
-              {
-                title: 'Monthly (School Days)',
-                earlyPrice: '$1,300',
-                regularPrice: '$1,500',
-                unit: 'month',
-                link: '#afterschool-form',
-              },
-              {
-                title: 'Piano Lesson Add-on',
-                earlyPrice: 'Inquire',
-                regularPrice: 'Inquire',
-                unit: 'lesson',
-                link: 'piano',
-              },
-            ].map((tier) => (
-              <div
-                key={tier.title}
-                className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/10 p-6 text-center transition-all hover:-translate-y-1 hover:bg-white/15"
-              >
-                <div>
-                  <h4 className="text-lg font-bold text-white min-h-[56px] flex items-center justify-center">
-                    {tier.title}
-                  </h4>
-                  <div className="mt-4 space-y-1">
-                    <p className="text-xs text-white/60">Early Bird Price</p>
-                    <div className="flex items-baseline justify-center gap-0.5">
-                      <span className="text-3xl font-extrabold text-[#f5a347]">{tier.earlyPrice}</span>
-                      {tier.unit && <span className="text-xs text-white/50">/{tier.unit}</span>}
-                    </div>
-                    <p className="text-[10px] text-white/40 italic">Until Sept 26</p>
-                  </div>
-                  
-                  <div className="mt-4 pt-3 border-t border-white/5">
-                    <p className="text-xs text-white/60">Regular Price</p>
-                    <div className="flex items-baseline justify-center gap-0.5">
-                      <span className="text-xl font-bold text-white/95">{tier.regularPrice}</span>
-                      {tier.unit && <span className="text-xs text-white/50">/{tier.unit}</span>}
-                    </div>
-                    <p className="text-[10px] text-white/40 italic">From Sept 26</p>
-                  </div>
-                </div>
-                
-                {tier.link === 'piano' ? (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setFormData((prev) => ({ ...prev, pianoLesson: true }));
-                      const el = document.getElementById('piano-addon-field');
-                      if (el) {
-                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                      }
-                    }}
-                    className="mt-6 w-full rounded-xl bg-[#f5a347] px-4 py-2.5 text-xs font-bold text-[#0e243a] transition-all hover:bg-[#e49236] active:scale-95 shadow-md"
-                  >
-                    Add to Register
-                  </button>
-                ) : tier.link && tier.link.startsWith('http') ? (
-                  <a
-                    href={tier.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-6 block w-full rounded-xl bg-[#c74444] px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-[#a63535] active:scale-95 shadow-md"
-                  >
-                    Pay Early Bird
-                  </a>
-                ) : (
-                  <a
-                    href="#afterschool-form"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      const el = document.getElementById('afterschool-form');
-                      if (el) el.scrollIntoView({ behavior: 'smooth' });
-                    }}
-                    className="mt-6 block w-full rounded-xl bg-[#1a7b8e] px-4 py-2.5 text-xs font-bold text-white transition-all hover:bg-[#145f6e] active:scale-95 shadow-md"
-                  >
-                    Register Below
-                  </a>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Registration Form */}
-        <div className="rounded-2xl bg-[#f6dedd] p-8 shadow-lg md:p-10">
+        <div className="rounded-3xl border border-white/80 bg-[#f6dedd]/40 backdrop-blur-md p-8 shadow-xl md:p-10">
           <div className="mb-8 text-center">
             <h3 className="text-3xl font-bold text-[#c74444]">
               {content.registrationTitle}
@@ -725,31 +829,62 @@ export default function AfterschoolPrograms({
               </p>
             </div>
 
-            {/* Piano Lesson Add-on option */}
-            <div id="piano-addon-field" className="md:col-span-2 space-y-3">
+            {/* Add-on Options */}
+            <div className="md:col-span-2 space-y-3">
               <p className="font-semibold">Add-on Options</p>
-              <label className="flex items-center justify-between p-4 rounded-xl border border-[#1a7b8e]/20 bg-white hover:bg-white/80 cursor-pointer transition-colors shadow-sm">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-[#f5a347]/10 text-[#f5a347]">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="font-bold text-[#1a2945]">Piano Lesson Add-on</p>
-                    <p className="text-xs text-[#1a2945]/70">Add private piano lessons to your child's afterschool schedule</p>
-                  </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {/* Piano Lesson Add-on option */}
+                <div id="piano-addon-field">
+                  <label className="flex items-center justify-between p-4 rounded-xl border border-[#1a7b8e]/20 bg-white hover:bg-white/80 cursor-pointer transition-colors shadow-sm h-full">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-[#f5a347]/10 text-[#f5a347] shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-bold text-[#1a2945]">Piano Lesson Add-on</p>
+                        <p className="text-xs text-[#1a2945]/70">Add private piano lessons to your child's afterschool schedule</p>
+                      </div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      name="pianoLesson"
+                      checked={formData.pianoLesson || false}
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, pianoLesson: e.target.checked }));
+                      }}
+                      className="h-5 w-5 rounded text-[#1a7b8e] focus:ring-[#1a7b8e] shrink-0"
+                    />
+                  </label>
                 </div>
-                <input
-                  type="checkbox"
-                  name="pianoLesson"
-                  checked={formData.pianoLesson || false}
-                  onChange={(e) => {
-                    setFormData(prev => ({ ...prev, pianoLesson: e.target.checked }));
-                  }}
-                  className="h-5 w-5 rounded text-[#1a7b8e] focus:ring-[#1a7b8e]"
-                />
-              </label>
+
+                {/* Chess Add-on option */}
+                <div id="chess-addon-field">
+                  <label className="flex items-center justify-between p-4 rounded-xl border border-[#1a7b8e]/20 bg-white hover:bg-white/80 cursor-pointer transition-colors shadow-sm h-full">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-lg bg-[#1a7b8e]/10 text-[#1a7b8e] shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="font-bold text-[#1a2945]">Chess Add-on</p>
+                        <p className="text-xs text-[#1a2945]/70">Add dedicated Chess training to your child's afterschool schedule</p>
+                      </div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      name="chessAddon"
+                      checked={formData.chessAddon || false}
+                      onChange={(e) => {
+                        setFormData(prev => ({ ...prev, chessAddon: e.target.checked }));
+                      }}
+                      className="h-5 w-5 rounded text-[#1a7b8e] focus:ring-[#1a7b8e] shrink-0"
+                    />
+                  </label>
+                </div>
+              </div>
             </div>
 
             <label className="flex flex-col gap-2 md:col-span-2">
