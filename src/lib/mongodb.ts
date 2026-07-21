@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI?.trim();
+function getMongoUri() {
+  return process.env.MONGODB_URI?.trim() || '';
+}
 const SRV_LOOKUP_ERROR_PATTERN = /querySrv ECONNREFUSED|_mongodb\._tcp/i;
 const NETWORK_ERROR_PATTERN =
   /ECONNREFUSED|ENOTFOUND|ETIMEDOUT|timed out|Topology is closed/i;
@@ -25,7 +27,7 @@ if (!globalThis.mongooseCache) {
 }
 
 export function isMongoConfigured() {
-  return Boolean(MONGODB_URI);
+  return Boolean(getMongoUri());
 }
 
 export function getMongoErrorMessage(
@@ -62,13 +64,14 @@ export async function connectToDatabase() {
     return cached.conn;
   }
 
-  if (!MONGODB_URI) {
+  const uri = getMongoUri();
+  if (!uri) {
     throw new Error('MONGODB_URI is not defined in environment variables.');
   }
 
   if (!cached.promise) {
     cached.promise = mongoose
-      .connect(MONGODB_URI, {
+      .connect(uri, {
         bufferCommands: false,
         serverSelectionTimeoutMS: 5000,
       })

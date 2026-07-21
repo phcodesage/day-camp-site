@@ -5,12 +5,19 @@ export interface IRegistration extends Document {
   studentName: string;
   email: string;
   phone: string;
+  grade?: string;
+  subjects?: string[];
   activities: string[];
   preferredDays: string;
+  tuitionPlan?: string;
   startDate: string;
+  endDate?: string;
   notes?: string;
   pianoLesson?: boolean;
+  pianoFrequency?: string;
   chessAddon?: boolean;
+  chessFrequency?: string;
+  totalAmount?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -45,20 +52,36 @@ const registrationSchema = new Schema<IRegistration>(
       trim: true,
       match: [/^[0-9+().\-\s]{7,20}$/, 'Please provide a valid phone number'],
     },
+    grade: {
+      type: String,
+      trim: true,
+    },
+    subjects: {
+      type: [String],
+      default: [],
+    },
     activities: {
       type: [String],
-      required: [true, 'At least one activity is required'],
+      default: [],
     },
     preferredDays: {
       type: String,
       required: [true, 'Select at least one preferred day'],
-      maxlength: [80, 'Preferred days must not exceed 80 characters'],
+      maxlength: [120, 'Preferred days must not exceed 120 characters'],
+      trim: true,
+    },
+    tuitionPlan: {
+      type: String,
       trim: true,
     },
     startDate: {
       type: String,
       required: [true, 'Desired start date is required'],
       maxlength: [20, 'Start date must not exceed 20 characters'],
+      trim: true,
+    },
+    endDate: {
+      type: String,
       trim: true,
     },
     notes: {
@@ -71,9 +94,21 @@ const registrationSchema = new Schema<IRegistration>(
       type: Boolean,
       default: false,
     },
+    pianoFrequency: {
+      type: String,
+      trim: true,
+    },
     chessAddon: {
       type: Boolean,
       default: false,
+    },
+    chessFrequency: {
+      type: String,
+      trim: true,
+    },
+    totalAmount: {
+      type: Number,
+      default: 0,
     },
   },
   {
@@ -86,3 +121,4 @@ const Registration: Model<IRegistration> =
   mongoose.model<IRegistration>('Registration', registrationSchema);
 
 export default Registration;
+

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { connectToDatabase, getMongoErrorMessage } from '@/lib/mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 import Registration from '@/lib/models/Registration';
 import { requireAdminOrJsonResponse } from '@/lib/admin/requireAdmin';
 
@@ -41,13 +41,11 @@ export async function GET(request: Request) {
         updatedAt: item.updatedAt,
       })),
     });
-  } catch (error) {
-    console.error('Admin registrations fetch failed:', error);
-    return NextResponse.json(
-      {
-        error: getMongoErrorMessage(error, 'Could not load registrations.'),
-      },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.warn('Admin registrations fetch failed (non-blocking):', error?.message || error);
+    return NextResponse.json({
+      items: [],
+      warning: 'Database offline or unconfigured.',
+    });
   }
 }

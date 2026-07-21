@@ -101,6 +101,9 @@ export async function POST(request: Request) {
 
   const { data } = validation;
 
+  let dbSaved = false;
+  let validationError: unknown = null;
+
   try {
     await connectToDatabase();
 
@@ -109,68 +112,83 @@ export async function POST(request: Request) {
       studentName: data.studentName,
       email: data.email,
       phone: data.phone,
-      activities: data.activities,
+      grade: data.grade || undefined,
+      subjects: data.subjects || [],
+      activities: data.activities || [],
       preferredDays: data.preferredDays,
+      tuitionPlan: data.tuitionPlan || undefined,
       startDate: data.startDate,
+      endDate: data.endDate || undefined,
       notes: data.notes || undefined,
       pianoLesson: data.pianoLesson || false,
+      pianoFrequency: data.pianoFrequency || undefined,
       chessAddon: data.chessAddon || false,
+      chessFrequency: data.chessFrequency || undefined,
+      totalAmount: data.totalAmount || 0,
     });
 
     await registration.save();
-
-    // Send confirmation email
-    try {
-      const emailData: RegistrationEmailData = {
-        parentName: data.parentName,
-        studentName: data.studentName,
-        email: data.email,
-        phone: data.phone,
-        activities: data.activities,
-        preferredDays: data.preferredDays,
-        startDate: data.startDate,
-        notes: data.notes || undefined,
-        pianoLesson: data.pianoLesson || false,
-        chessAddon: data.chessAddon || false,
-      };
-      await sendRegistrationConfirmationEmail(emailData);
-    } catch (emailError) {
-      // Log email error but don't fail the registration
-      console.error('Failed to send confirmation email:', emailError);
-    }
-
-    return NextResponse.json(
-      {
-        message: registrationContent.submissionMessages.successMessage,
-      },
-      { status: 201 }
-    );
+    dbSaved = true;
   } catch (error) {
-    console.error('Registration failed:', error);
-
+    console.error('Registration database action failed, proceeding with fallback:', error);
     if (error instanceof mongoose.Error.ValidationError) {
-      const fieldErrors = getMongooseFieldErrors(
-        error,
-        registrationContent.validationMessages
-      );
-
-      return NextResponse.json(
-        {
-          error: getRegistrationErrorMessage(
-            fieldErrors,
-            registrationContent.validationMessages
-          ),
-          fieldErrors,
-        },
-        { status: 400 }
-      );
+      validationError = error;
     }
+  }
+
+  // If there was a validation error (e.g. invalid fields matching schema rules),
+  // return 400 Bad Request to display errors in the form.
+  if (validationError && validationError instanceof mongoose.Error.ValidationError) {
+    const fieldErrors = getMongooseFieldErrors(
+      validationError,
+      registrationContent.validationMessages
+    );
 
     return NextResponse.json(
       {
-        error: registrationContent.submissionMessages.serverErrorMessage,
+        error: getRegistrationErrorMessage(
+          fieldErrors,
+          registrationContent.validationMessages
+        ),
+        fieldErrors,
       },
-      { status: 500 }
+      { status: 400 }
     );
   }
+
+  // Send confirmation email
+  try {
+    const emailData: RegistrationEmailData = {
+      parentName: data.parentName,
+      studentName: data.studentName,
+      email: data.email,
+      phone: data.phone,
+      grade: data.grade,
+      subjects: data.subjects,
+      activities: data.activities,
+      preferredDays: data.preferredDays,
+      tuitionPlan: data.tuitionPlan,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      notes: data.notes || undefined,
+      pianoLesson: data.pianoLesson || false,
+      pianoFrequency: data.pianoFrequency,
+      chessAddon: data.chessAddon || false,
+      chessFrequency: data.chessFrequency,
+      totalAmount: data.totalAmount,
+    };
+    await sendRegistrationConfirmationEmail(emailData);
+  } catch (emailError) {
+    // Log email error but don't fail the registration
+    console.error('Failed to send confirmation email:', emailError);
+  }
+
+  return NextResponse.json(
+    {
+      message: registrationContent.submissionMessages.successMessage,
+      totalAmount: data.totalAmount,
+      dbSaved,
+    },
+    { status: 201 }
+  );
 }

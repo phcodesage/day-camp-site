@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { connectToDatabase, getMongoErrorMessage } from '@/lib/mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 import PageView from '@/lib/models/PageView';
 import Visit from '@/lib/models/Visit';
 import { requireAdminOrJsonResponse } from '@/lib/admin/requireAdmin';
@@ -40,13 +40,13 @@ export async function GET() {
       totalVisits,
       visitsByDevice,
     });
-  } catch (error) {
-    console.error('Analytics summary failed:', error);
-    return NextResponse.json(
-      {
-        error: getMongoErrorMessage(error, 'Could not load analytics.'),
-      },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    console.warn('Analytics summary database read failed (non-blocking):', error?.message || error);
+    return NextResponse.json({
+      totalPageViews: 0,
+      totalVisits: 0,
+      visitsByDevice: [],
+      warning: 'Database offline or unconfigured.',
+    });
   }
 }

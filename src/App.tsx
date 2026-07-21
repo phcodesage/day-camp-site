@@ -10,11 +10,11 @@ async function App() {
   const siteChrome = await getCmsSectionContent('siteChrome');
 
   return (
-    <div className="relative min-h-screen w-full bg-[#f5e6e0] pt-16">
+    <div className="relative min-h-screen w-full bg-[#f5e6e0] pt-16 overflow-x-clip">
       <NavBar cms={siteChrome} />
       <ScrollToTop label={siteChrome.scrollToTopLabel} />
 
-      <main>
+      <main className="overflow-x-clip">
         <img
           src={siteChrome.accentImageSrc}
           alt={siteChrome.accentImageAlt}

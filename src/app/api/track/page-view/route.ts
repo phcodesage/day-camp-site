@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { connectToDatabase, getMongoErrorMessage } from '@/lib/mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 import PageView from '@/lib/models/PageView';
 import Visit from '@/lib/models/Visit';
 
@@ -74,13 +74,14 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ ok: true });
-  } catch (error) {
-    console.error('Track page-view failed:', error);
+  } catch (error: any) {
+    console.warn('Track page-view database write failed (non-blocking):', error?.message || error);
     return NextResponse.json(
       {
-        error: getMongoErrorMessage(error, 'Could not record page view.'),
+        ok: false,
+        warning: 'Database offline or unconfigured.',
       },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }
