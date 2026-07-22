@@ -5,7 +5,9 @@ import { useEffect, useState } from 'react';
 type AnalyticsSummary = {
   totalPageViews: number;
   totalVisits: number;
+  totalRegistrations: number;
   visitsByDevice: Array<{ device: string; count: number }>;
+  warning?: string;
 };
 
 export default function AdminAnalyticsPage() {
@@ -62,6 +64,12 @@ export default function AdminAnalyticsPage() {
 
       {data ? (
         <div className="mt-4 space-y-4 md:mt-6 md:space-y-6">
+          {data.warning ? (
+            <div className="rounded-xl border border-[#c7a244]/40 bg-[#c7a244]/10 p-3 text-xs text-[#6b5416] md:p-4 md:text-sm">
+              {data.warning}
+            </div>
+          ) : null}
+
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-2xl bg-white/80 p-4 shadow md:p-5">
               <p className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">
@@ -71,7 +79,7 @@ export default function AdminAnalyticsPage() {
                 {data.totalVisits}
               </p>
             </div>
-            <div className="rounded-2xl bg-white/80 p-4 shadow md:col-span-2 md:p-5">
+            <div className="rounded-2xl bg-white/80 p-4 shadow md:p-5">
               <p className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">
                 Total Page Views
               </p>
@@ -79,6 +87,20 @@ export default function AdminAnalyticsPage() {
                 {data.totalPageViews}
               </p>
             </div>
+            <a
+              href="/admin/registrations"
+              className="rounded-2xl bg-white/80 p-4 shadow transition-shadow hover:shadow-md md:p-5"
+            >
+              <p className="text-xs font-semibold text-[#1a2945]/70 md:text-sm">
+                Total Registrations
+              </p>
+              <p className="mt-2 text-2xl font-extrabold text-[#1a2945] md:text-3xl">
+                {data.totalRegistrations}
+              </p>
+              <p className="mt-1 text-[11px] font-medium text-[#c74444] md:text-xs">
+                View all &rarr;
+              </p>
+            </a>
           </div>
 
           <div className="rounded-2xl bg-white/80 p-4 shadow md:p-5">
